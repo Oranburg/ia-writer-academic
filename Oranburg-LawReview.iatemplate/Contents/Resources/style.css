@@ -10,7 +10,7 @@
    Imports shared variables from oranburg-variables.css.
    ========================================================= */
 
-@import url("../../shared/oranburg-variables.css");
+@import url("oranburg-variables.css");
 
 
 /* =========================================================

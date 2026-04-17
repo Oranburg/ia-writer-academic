@@ -1,0 +1,143 @@
+/* =========================================================
+   ORANBURG STYLE — Shared CSS Custom Properties
+   Used by all Oranburg iA Writer templates.
+
+   Palette: CUA-origin, neutral semantic names.
+   Fonts: Crimson Text (body), Oswald (headings),
+          Roboto (UI), Roboto Mono (code).
+   ========================================================= */
+
+
+/* =========================================================
+   1. PALETTE
+   ========================================================= */
+:root {
+    /* Primary */
+    --blue-deep:        #0A3255;
+    --red-deep:         #B21F2C;
+
+    /* Secondary */
+    --red-bright:       #E82F35;
+    --blue-bright:      #2459A9;
+    --red-light:        #E96955;
+    --blue-light:       #6DACDE;
+
+    /* Tertiary */
+    --yellow:           #FFD65C;
+    --teal:             #B5E1E1;
+
+    /* Neutrals */
+    --black:            #000000;
+    --white:            #FFFFFF;
+    --gray-muted:       #555555;
+    --gray-light:       #F8F9FA;
+}
+
+
+/* =========================================================
+   2. FONT STACKS
+   ========================================================= */
+:root {
+    --font-body:        'Crimson Text', Georgia, 'Times New Roman', serif;
+    --font-heading:     'Oswald', 'Helvetica Neue', Arial, sans-serif;
+    --font-ui:          'Roboto', 'Helvetica Neue', Arial, sans-serif;
+    --font-mono:        'Roboto Mono', 'Consolas', 'Courier New', monospace;
+
+    /* Submission override (law reviews) */
+    --font-submission:  'Times New Roman', 'Times', serif;
+}
+
+
+/* =========================================================
+   3. HEADING COLORS — LIGHT MODE
+   White background, dark colors.
+   ========================================================= */
+:root {
+    --color-bg:         var(--white);
+    --color-text:       var(--black);
+    --color-muted:      var(--gray-muted);
+
+    --color-title:      var(--blue-deep);       /* Setext === or first H1 */
+    --color-h1:         var(--blue-deep);        /* # Section heading */
+    --color-h2:         var(--blue-bright);      /* ## Major subdivision */
+    --color-h3:         var(--red-deep);         /* ### Sub-subdivision */
+    --color-h4:         var(--black);            /* #### and below */
+}
+
+
+/* =========================================================
+   4. HEADING COLORS — NIGHT MODE
+   Pure black background (#000000), bright colors.
+   ========================================================= */
+.night-mode {
+    --color-bg:         var(--black);
+    --color-text:       var(--white);
+    --color-muted:      #9CA3AF;
+
+    --color-title:      var(--yellow);           /* Gold title on black */
+    --color-h1:         var(--blue-light);       /* Light blue sections */
+    --color-h2:         var(--teal);             /* Teal subdivisions */
+    --color-h3:         var(--red-light);        /* Warm red depth */
+    --color-h4:         var(--white);            /* Falls back to body */
+}
+
+
+/* =========================================================
+   5. PRINT COLORS — ALL BLACK
+   No color in print output. Hierarchy through
+   font family, weight, and size only.
+   ========================================================= */
+@media print {
+    :root {
+        --color-bg:     transparent;
+        --color-text:   var(--black);
+        --color-muted:  #444444;
+
+        --color-title:  var(--black);
+        --color-h1:     var(--black);
+        --color-h2:     var(--black);
+        --color-h3:     var(--black);
+        --color-h4:     var(--black);
+    }
+}
+
+
+/* =========================================================
+   6. SPACING
+   ========================================================= */
+:root {
+    --line-height-body:     1.15;
+    --line-height-screen:   1.6;        /* More generous for on-screen reading */
+    --line-height-double:   2.0;        /* Law review submission */
+    --line-height-footnote: 1.2;
+
+    --font-size-body:       12pt;
+    --font-size-footnote:   10pt;
+
+    --indent-para:          0.5in;      /* First-line indent for book/article */
+    --indent-block:         0.5in;      /* Bluebook block quote indent */
+}
+
+
+/* =========================================================
+   7. PRINT HEADING HIERARCHY (Oranburg Style D-015)
+   Used by @media print rules in individual templates.
+   On screen, these are overridden by color + the same fonts.
+   ========================================================= */
+:root {
+    /* H1: Oswald Bold 16pt — chapter/document titles */
+    --print-h1-size:    16pt;
+    --print-h1-weight:  700;
+
+    /* H2: Oswald SemiBold 14pt — major sections */
+    --print-h2-size:    14pt;
+    --print-h2-weight:  600;
+
+    /* H3: Oswald Regular 12pt — subsections */
+    --print-h3-size:    12pt;
+    --print-h3-weight:  400;
+
+    /* H4: Roboto Medium 12pt — minor subdivisions */
+    --print-h4-size:    12pt;
+    --print-h4-weight:  500;
+}

@@ -1,23 +1,22 @@
 /* =========================================================
-   ORANBURG DRAFT TEMPLATE
-   Seth C. Oranburg — Oranburg Style
+   ORANBURG BOOK BASE CSS
+   Shared rules for all book-format templates
+   (US Trade 6x9, Digest 5.5x8.5, Executive 7x10).
 
-   Working manuscript. 8.5x11 US Letter.
+   Each book template imports this file, then adds its own
+   @page rule with the correct page size and margins.
+
    Screen: color headings, comfortable reading.
    Print:  all black, Crimson Text 12pt, 1.15 spacing,
-           first-line indent, running header.
+           first-line indent, mirror margins, running headers.
    ========================================================= */
 
 @import url("oranburg-variables.css");
 
 
 /* =========================================================
-   1. PAGE & BASE
+   1. BASE
    ========================================================= */
-@page {
-    margin: 1in;
-}
-
 html {
     background-color: var(--color-bg);
     color: var(--color-text);
@@ -34,7 +33,7 @@ body {
 
 @media screen {
     body {
-        max-width: 42em;
+        max-width: 38em;
         margin: 0 auto;
         padding: 1em 2em;
         line-height: var(--line-height-screen);
@@ -52,15 +51,8 @@ body {
     }
 }
 
-body > :first-child {
-    margin-top: 0;
-    padding-top: 0;
-}
+body > :first-child { margin-top: 0; padding-top: 0; }
 
-
-/* =========================================================
-   2. NIGHT MODE
-   ========================================================= */
 .night-mode {
     background-color: var(--black);
     color: var(--white);
@@ -68,7 +60,7 @@ body > :first-child {
 
 
 /* =========================================================
-   3. HEADINGS
+   2. HEADINGS
    ========================================================= */
 h1, h2, h3, h4, h5, h6 {
     font-family: var(--font-heading);
@@ -83,58 +75,27 @@ h1:first-of-type {
     font-weight: 700;
     text-align: center;
     color: var(--color-title);
-    margin-top: 0.75em;
+    margin-top: 1.5em;
     margin-bottom: 0.5em;
 }
 
-h1 {
-    font-size: var(--print-h1-size);
-    font-weight: var(--print-h1-weight);
-    color: var(--color-h1);
-    margin-top: 2em;
-}
+h1 { font-size: var(--print-h1-size); font-weight: var(--print-h1-weight); color: var(--color-h1); margin-top: 2em; }
+h2 { font-size: var(--print-h2-size); font-weight: var(--print-h2-weight); color: var(--color-h2); margin-top: 1.75em; }
+h3 { font-size: var(--print-h3-size); font-weight: var(--print-h3-weight); color: var(--color-h3); margin-top: 1.5em; }
+h4 { font-family: var(--font-ui); font-size: var(--print-h4-size); font-weight: var(--print-h4-weight); color: var(--color-h4); margin-top: 1.25em; }
+h5 { font-size: 1em; font-weight: 400; font-style: italic; color: var(--color-h4); margin-top: 1em; }
+h6 { font-size: 0.9em; font-weight: 400; color: var(--color-muted); margin-top: 1em; }
 
-h2 {
-    font-size: var(--print-h2-size);
-    font-weight: var(--print-h2-weight);
-    color: var(--color-h2);
-    margin-top: 1.75em;
-}
-
-h3 {
-    font-size: var(--print-h3-size);
-    font-weight: var(--print-h3-weight);
-    color: var(--color-h3);
-    margin-top: 1.5em;
-}
-
-h4 {
-    font-family: var(--font-ui);
-    font-size: var(--print-h4-size);
-    font-weight: var(--print-h4-weight);
-    color: var(--color-h4);
-    margin-top: 1.25em;
-}
-
-h5, h6 {
-    font-size: 1em;
-    color: var(--color-h4);
-    margin-top: 1em;
-}
-
-h5 { font-weight: 400; font-style: italic; }
-h6 { font-weight: 400; color: var(--color-muted); }
-
+/* Print: chapter openers get page breaks */
 @media print {
-    h1, h2, h3, h4, h5, h6,
-    h1:first-of-type {
-        color: var(--black);
-    }
+    h1, h2, h3, h4, h5, h6, h1:first-of-type { color: var(--black); }
+    h1 { page-break-before: always; }
+    h1:first-of-type { page-break-before: avoid; }
 }
 
 
 /* =========================================================
-   4. PARAGRAPHS
+   3. PARAGRAPHS — First-line indent for books
    ========================================================= */
 p {
     text-indent: var(--indent-para);
@@ -144,28 +105,23 @@ p {
 }
 
 h1 + p, h2 + p, h3 + p, h4 + p, h5 + p, h6 + p,
-blockquote + p, .no-indent {
-    text-indent: 0;
-}
-
+blockquote + p, .no-indent { text-indent: 0; }
 li p { text-indent: 0; }
 
-/* On screen, use block paragraphs for easier reading */
 @media screen {
-    p {
-        text-indent: 0;
-        margin: 0 0 1em 0;
-    }
+    p { text-indent: 0; margin: 0 0 1em 0; }
 }
 
 
 /* =========================================================
-   5. BLOCKQUOTES
+   4. BLOCKQUOTES
    ========================================================= */
 blockquote {
     margin: 0.75em var(--indent-block);
     text-indent: 0;
     font-style: normal;
+    font-size: 11pt;
+    line-height: 1.2;
 }
 
 @media screen {
@@ -173,96 +129,40 @@ blockquote {
         border-left: 3px solid var(--blue-bright);
         margin-left: 0;
         padding-left: 1.2em;
+        font-size: inherit;
+        line-height: inherit;
     }
-
-    .night-mode blockquote {
-        border-left-color: var(--blue-light);
-    }
+    .night-mode blockquote { border-left-color: var(--blue-light); }
 }
 
 blockquote p { text-indent: 0; }
 
 
 /* =========================================================
-   6. LINKS
+   5. LINKS, LISTS, TABLES, CODE
    ========================================================= */
 a { color: var(--blue-bright); text-decoration: underline; }
 .night-mode a { color: var(--blue-light); }
+@media print { a { color: var(--black); text-decoration: none; } }
 
-@media print {
-    a { color: var(--black); text-decoration: none; }
-}
-
-
-/* =========================================================
-   7. LISTS
-   ========================================================= */
-ul, ol {
-    margin: 0.5em 0;
-    padding-left: 1.5em;
-}
-
+ul, ol { margin: 0.5em 0; padding-left: 1.5em; }
 li { margin-bottom: 0.3em; }
 
+table { width: 100%; border-collapse: collapse; margin: 1em 0; }
+th, td { padding: 0.3em 0.5em; vertical-align: top; border-bottom: 1px solid var(--color-muted); }
+th { font-family: var(--font-heading); font-weight: 600; border-bottom: 2px solid var(--color-text); }
+caption { font-style: italic; text-align: left; font-size: 0.9em; color: var(--color-muted); margin-bottom: 0.25em; }
 
-/* =========================================================
-   8. TABLES
-   ========================================================= */
-table {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 0.95em;
-    margin: 1em 0;
-}
-
-th, td {
-    padding: 0.3em 0.5em;
-    vertical-align: top;
-    border-bottom: 1px solid var(--color-muted);
-}
-
-th {
-    font-family: var(--font-heading);
-    font-weight: 600;
-    border-bottom: 2px solid var(--color-text);
-}
-
-caption {
-    font-style: italic;
-    text-align: left;
-    font-size: 0.9em;
-    color: var(--color-muted);
-    margin-bottom: 0.25em;
-}
-
-
-/* =========================================================
-   9. CODE
-   ========================================================= */
-code, pre, kbd {
-    font-family: var(--font-mono);
-    font-size: 0.9em;
-    background-color: var(--gray-light);
-    border-radius: 3px;
-}
-
-.night-mode code,
-.night-mode pre,
-.night-mode kbd {
-    background-color: #111111;
-}
-
+code, pre, kbd { font-family: var(--font-mono); font-size: 0.9em; background-color: var(--gray-light); border-radius: 3px; }
+.night-mode code, .night-mode pre, .night-mode kbd { background-color: #111111; }
 code { padding: 0.15em 0.3em; }
 pre { padding: 0.75em 1em; margin: 0.75em 0; overflow-x: auto; white-space: pre-wrap; }
 pre code { padding: 0; background: none; }
-
-@media print {
-    code, pre, kbd { background-color: #f5f5f5 !important; color: var(--black) !important; }
-}
+@media print { code, pre, kbd { background-color: #f5f5f5 !important; color: var(--black) !important; } }
 
 
 /* =========================================================
-   10. FOOTNOTES
+   6. FOOTNOTES
    ========================================================= */
 .footnotes {
     font-family: var(--font-body);
@@ -275,12 +175,8 @@ pre code { padding: 0; background: none; }
 .footnotes p { text-indent: 0; margin-bottom: 0.4em; }
 
 .footnotes hr {
-    border: none;
-    border-top: 1px solid currentColor;
-    width: 33%;
-    margin-left: 0;
-    margin-top: 1.5em;
-    margin-bottom: 0.5em;
+    border: none; border-top: 1px solid currentColor;
+    width: 33%; margin-left: 0; margin-top: 1.5em; margin-bottom: 0.5em;
 }
 
 sup { font-size: 0.75em; line-height: 0; }
@@ -294,17 +190,19 @@ a.footnote-back { text-decoration: none; color: var(--color-muted); font-size: 0
 
 
 /* =========================================================
-   11. HEADER & FOOTER
+   7. RUNNING HEADER & FOOTER
+   Recto (odd): title left, page number right.
+   Verso (even): page number left, author right.
+   (CSS cannot distinguish odd/even pages in WebKit,
+   so we use a simpler: title left, page right.)
    ========================================================= */
 .header-container {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-end;
+    display: flex; justify-content: space-between; align-items: flex-end;
     font-family: var(--font-heading);
-    font-size: 9pt;
+    font-size: 9pt; font-weight: 400;
     color: var(--color-muted);
     padding: 0.15in 0 4pt 0;
-    border-bottom: 1px solid var(--color-muted);
+    border-bottom: 0.5pt solid var(--color-muted);
 }
 
 .header-left { font-variant: small-caps; }
@@ -313,23 +211,22 @@ a.footnote-back { text-decoration: none; color: var(--color-muted); font-size: 0
 .footer-container {
     text-align: center;
     font-family: var(--font-heading);
-    font-size: 8pt;
+    font-size: 9pt;
     color: var(--color-muted);
     padding-top: 0.1in;
-    letter-spacing: 0.05em;
-    text-transform: uppercase;
 }
 
 
 /* =========================================================
-   12. IMAGES
+   8. IMAGES
    ========================================================= */
 img { max-width: 100%; }
+figure { page-break-inside: avoid; margin: 1em 0; }
 figcaption { font-style: italic; font-size: 0.9em; color: var(--color-muted); margin-top: 0.4em; }
 
 
 /* =========================================================
-   13. iOS FONT SIZE SUPPORT
+   9. iOS FONT SIZE SUPPORT
    ========================================================= */
 html.content-size-xs  { font-size: 12px; }
 html.content-size-s   { font-size: 14px; }
