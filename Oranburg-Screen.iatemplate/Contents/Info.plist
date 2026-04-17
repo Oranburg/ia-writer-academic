@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CFBundleName</key>
+	<string>Oranburg Screen</string>
+	<key>CFBundleIdentifier</key>
+	<string>io.github.oranburg.screen</string>
+	<key>IATemplateDocumentFile</key>
+	<string>document</string>
+	<key>IATemplateDescription</key>
+	<string>On-screen reading and editing. Color heading hierarchy, comfortable line spacing, light and dark mode. No print formatting.</string>
+	<key>IATemplateAuthor</key>
+	<string>Seth C. Oranburg</string>
+	<key>IATemplateAuthorURL</key>
+	<string>https://oranburg.github.io</string>
+</dict>
+</plist>

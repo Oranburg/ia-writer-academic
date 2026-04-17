@@ -1,0 +1,11 @@
+/* =========================================================
+   ORANBURG DIGEST (5.5x8.5) — Essays & Pamphlets
+   Margins per Lulu specs for 61-150 pages.
+   ========================================================= */
+
+@import url("../../shared/oranburg-book-base.css");
+
+@page {
+    size: 5.5in 8.5in;
+    margin: 0.5in 0.5in 0.625in 0.75in;  /* top outside bottom inside(gutter) */
+}

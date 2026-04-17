@@ -1,0 +1,11 @@
+/* =========================================================
+   ORANBURG EXECUTIVE (7x10) — Casebooks
+   Margins per Lulu specs for 151-400 pages.
+   ========================================================= */
+
+@import url("../../shared/oranburg-book-base.css");
+
+@page {
+    size: 7in 10in;
+    margin: 0.75in 0.75in 0.875in 1.125in;  /* top outside bottom inside(gutter) */
+}

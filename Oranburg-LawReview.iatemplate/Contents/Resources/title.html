@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!--
+        The title page is its own rendered page in iA Writer.
+        data-title: iA Writer fills in the document's title here.
+        
+        CUSTOMIZATION: Update the author name, institutional
+        affiliation string, and bio footnote below as needed.
+        The min-height on .title-page in style.css is sized
+        for U.S. Letter (8.5x11in). Adjust if using A4.
+    -->
+    <div class="title-page">
+
+        <!-- Document title (populated by iA Writer) -->
+        <h1 class="title-page-title" data-title></h1>
+
+        <!-- Author byline -->
+        <div class="title-page-author">
+            Seth C. Oranburg<span class="asterisk">*</span>
+        </div>
+
+        <!-- Spacer: pushes bio footnote to bottom of page -->
+        <div class="title-page-spacer"></div>
+
+        <!-- Author bio footnote at page bottom -->
+        <div class="author-footnote">
+            * Professor of Law, University of New Hampshire Franklin Pierce School
+            of Law; Director, Program on Business, Organization and Markets,
+            NYU Law Classical Liberal Institute; J.D., University of Chicago;
+            B.A., University of Florida. The author thanks [acknowledgments].
+            All errors are the author's own.
+        </div>
+
+    </div>
+</body>
+</html>

@@ -1,0 +1,11 @@
+/* =========================================================
+   ORANBURG US TRADE (6x9) — Monographs
+   Margins per Lulu specs for 151-400 pages.
+   ========================================================= */
+
+@import url("../../shared/oranburg-book-base.css");
+
+@page {
+    size: 6in 9in;
+    margin: 0.625in 0.625in 0.75in 1.0in;  /* top outside bottom inside(gutter) */
+}

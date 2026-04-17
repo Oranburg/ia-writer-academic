@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CFBundleName</key>
+	<string>Oranburg Submission</string>
+	<key>CFBundleIdentifier</key>
+	<string>io.github.oranburg.submission</string>
+	<key>IATemplateDocumentFile</key>
+	<string>document</string>
+	<key>IATemplateHeaderFile</key>
+	<string>header</string>
+	<key>IATemplateFooterFile</key>
+	<string>footer</string>
+	<key>IATemplateHeaderHeight</key>
+	<integer>50</integer>
+	<key>IATemplateFooterHeight</key>
+	<integer>36</integer>
+	<key>IATemplateDescription</key>
+	<string>Law review submission format. Times New Roman 12pt, double-spaced for PDF. Color headings on screen. Meets standard journal requirements.</string>
+	<key>IATemplateAuthor</key>
+	<string>Seth C. Oranburg</string>
+	<key>IATemplateAuthorURL</key>
+	<string>https://oranburg.github.io</string>
+</dict>
+</plist>

@@ -1,0 +1,240 @@
+/* =========================================================
+   ORANBURG SUBMISSION TEMPLATE
+   Seth C. Oranburg — Oranburg Style
+
+   Law review submission. Hard journal override for PDF:
+   Times New Roman 12pt, double-spaced, 1in margins.
+   Screen: normal Oranburg color headings for comfortable editing.
+   ========================================================= */
+
+@import url("../../shared/oranburg-variables.css");
+
+
+/* =========================================================
+   1. PAGE & BASE
+   ========================================================= */
+@page {
+    margin: 1in;
+}
+
+html {
+    background-color: var(--color-bg);
+    color: var(--color-text);
+}
+
+body {
+    font-family: var(--font-body);
+    font-size: var(--font-size-body);
+    line-height: var(--line-height-body);
+    color: var(--color-text);
+    margin: 0;
+    padding: 0;
+}
+
+@media screen {
+    body {
+        max-width: 42em;
+        margin: 0 auto;
+        padding: 1em 2em;
+        line-height: var(--line-height-screen);
+        font-size: 1.125rem;
+    }
+}
+
+/* SUBMISSION OVERRIDE: TNR double-spaced for print */
+@media print {
+    html, body {
+        background: transparent !important;
+        color: var(--black) !important;
+        font-family: var(--font-submission) !important;
+        font-size: 12pt !important;
+        line-height: var(--line-height-double) !important;
+        -webkit-hyphens: none;
+        hyphens: none;
+    }
+}
+
+body > :first-child { margin-top: 0; padding-top: 0; }
+
+.night-mode {
+    background-color: var(--black);
+    color: var(--white);
+}
+
+
+/* =========================================================
+   2. HEADINGS
+   ========================================================= */
+h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-heading);
+    line-height: 1.25;
+    margin-bottom: 0.4em;
+    page-break-after: avoid;
+}
+
+h1:first-of-type {
+    font-size: 2em;
+    font-weight: 700;
+    text-align: center;
+    color: var(--color-title);
+    margin-top: 0.75em;
+    margin-bottom: 0.5em;
+}
+
+h1 { font-size: 1.5em; font-weight: 700; color: var(--color-h1); margin-top: 2em; }
+h2 { font-size: 1.25em; font-weight: 600; color: var(--color-h2); margin-top: 1.75em; }
+h3 { font-size: 1.1em; font-weight: 400; color: var(--color-h3); margin-top: 1.5em; }
+h4 { font-size: 1em; font-weight: 700; color: var(--color-h4); margin-top: 1.25em; }
+h5 { font-size: 1em; font-weight: 400; font-style: italic; color: var(--color-h4); margin-top: 1em; }
+
+/* Print: all headings in TNR, black, bold */
+@media print {
+    h1, h2, h3, h4, h5, h6,
+    h1:first-of-type {
+        font-family: var(--font-submission) !important;
+        color: var(--black) !important;
+    }
+
+    h1:first-of-type {
+        font-size: 14pt;
+        text-transform: uppercase;
+        letter-spacing: 0.03em;
+    }
+
+    h1 { font-size: 13pt; font-weight: bold; text-transform: uppercase; }
+    h2 { font-size: 12pt; font-weight: bold; font-variant: small-caps; }
+    h3 { font-size: 12pt; font-weight: bold; font-style: italic; }
+    h4 { font-size: 12pt; font-weight: normal; font-style: italic; }
+}
+
+
+/* =========================================================
+   3. PARAGRAPHS
+   ========================================================= */
+p {
+    text-indent: var(--indent-para);
+    margin: 0;
+    orphans: 3;
+    widows: 3;
+}
+
+h1 + p, h2 + p, h3 + p, h4 + p, h5 + p,
+blockquote + p, .no-indent { text-indent: 0; }
+li p { text-indent: 0; }
+
+@media screen {
+    p { text-indent: 0; margin: 0 0 1em 0; }
+}
+
+
+/* =========================================================
+   4. BLOCKQUOTES, LINKS, LISTS, TABLES, CODE
+   ========================================================= */
+blockquote {
+    margin: 0.75em var(--indent-block);
+    text-indent: 0;
+    font-style: normal;
+}
+
+@media screen {
+    blockquote { border-left: 3px solid var(--blue-bright); margin-left: 0; padding-left: 1.2em; }
+    .night-mode blockquote { border-left-color: var(--blue-light); }
+}
+
+@media print {
+    blockquote {
+        font-size: 11pt;
+        line-height: 1.2;
+    }
+}
+
+blockquote p { text-indent: 0; }
+
+a { color: var(--blue-bright); text-decoration: underline; }
+.night-mode a { color: var(--blue-light); }
+@media print { a { color: var(--black); text-decoration: none; } }
+
+ul, ol { margin: 0.5em 0; padding-left: 1.5em; }
+li { margin-bottom: 0.3em; }
+
+table { width: 100%; border-collapse: collapse; margin: 1em 0; }
+th, td { padding: 0.3em 0.5em; vertical-align: top; border-bottom: 1px solid var(--color-muted); }
+th { font-weight: bold; border-bottom: 2px solid var(--color-text); }
+
+code, pre, kbd { font-family: var(--font-mono); font-size: 0.9em; background-color: var(--gray-light); border-radius: 3px; }
+.night-mode code, .night-mode pre, .night-mode kbd { background-color: #111111; }
+code { padding: 0.15em 0.3em; }
+pre { padding: 0.75em 1em; margin: 0.75em 0; overflow-x: auto; white-space: pre-wrap; }
+pre code { padding: 0; background: none; }
+@media print { code, pre, kbd { background-color: #f5f5f5 !important; color: var(--black) !important; font-family: 'Courier New', monospace !important; } }
+
+
+/* =========================================================
+   5. FOOTNOTES
+   ========================================================= */
+.footnotes {
+    font-family: var(--font-body);
+    font-size: var(--font-size-footnote);
+    line-height: var(--line-height-footnote);
+}
+
+@media print {
+    .footnotes {
+        font-family: var(--font-submission) !important;
+        font-size: 10pt !important;
+        line-height: 1.0 !important;
+    }
+}
+
+.footnotes ol { margin: 0; padding-left: 2.5em; list-style-position: outside; }
+.footnotes li { margin-bottom: 0.5em; }
+.footnotes p { text-indent: 0; margin-bottom: 0.4em; }
+
+.footnotes hr {
+    border: none; border-top: 1px solid currentColor;
+    width: 33%; margin-left: 0; margin-top: 1.5em; margin-bottom: 0.5em;
+}
+
+sup { font-size: 0.75em; line-height: 0; }
+a.footnote-back { text-decoration: none; color: var(--color-muted); font-size: 0.8em; }
+
+@media print {
+    .footnotes li { page-break-inside: avoid; break-inside: avoid; }
+    .footnote { text-decoration: none; }
+    .reversefootnote { display: none; }
+}
+
+
+/* =========================================================
+   6. HEADER & FOOTER
+   ========================================================= */
+.header-container {
+    display: flex; justify-content: space-between; align-items: flex-end;
+    font-family: var(--font-submission);
+    font-size: 10pt; color: var(--color-muted);
+    padding: 0.15in 0 4pt 0;
+}
+
+.header-left { font-variant: small-caps; }
+.header-right { text-align: right; }
+
+.footer-container {
+    text-align: center; font-size: 8pt; color: var(--color-muted);
+}
+
+
+/* =========================================================
+   7. iOS FONT SIZE SUPPORT
+   ========================================================= */
+html.content-size-xs  { font-size: 12px; }
+html.content-size-s   { font-size: 14px; }
+html.content-size-m   { font-size: 15px; }
+html.content-size-l   { font-size: 16px; }
+html.content-size-xl  { font-size: 18px; }
+html.content-size-xxl { font-size: 20px; }
+html.content-size-xxxl { font-size: 22px; }
+html.content-size-accessibility-m    { font-size: 24px; }
+html.content-size-accessibility-l    { font-size: 28px; }
+html.content-size-accessibility-xl   { font-size: 32px; }
+html.content-size-accessibility-xxl  { font-size: 36px; }
+html.content-size-accessibility-xxxl { font-size: 40px; }
