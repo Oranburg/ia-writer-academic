@@ -2,10 +2,20 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>CFBundleDevelopmentRegion</key>
+	<string>en</string>
+	<key>CFBundleInfoDictionaryVersion</key>
+	<string>6.0</string>
+	<key>CFBundlePackageType</key>
+	<string>BNDL</string>
 	<key>CFBundleName</key>
 	<string>Oranburg Digest</string>
 	<key>CFBundleIdentifier</key>
 	<string>io.github.oranburg.digest</string>
+	<key>CFBundleShortVersionString</key>
+	<string>2.0.0</string>
+	<key>CFBundleVersion</key>
+	<string>2</string>
 	<key>IATemplateDocumentFile</key>
 	<string>document</string>
 	<key>IATemplateHeaderFile</key>
@@ -13,11 +23,13 @@
 	<key>IATemplateFooterFile</key>
 	<string>footer</string>
 	<key>IATemplateHeaderHeight</key>
-	<integer>40</integer>
+	<integer>36</integer>
 	<key>IATemplateFooterHeight</key>
-	<integer>28</integer>
+	<integer>45</integer>
+	<key>IATemplateSupportsDiffHTML</key>
+	<false/>
 	<key>IATemplateDescription</key>
-	<string>Essay and pamphlet format. 5.5x8.5 Digest trim for Lulu. Tighter margins for the smaller page. For articles, essays, and short works.</string>
+	<string>Essay and pamphlet format. 5.5x8.5 Digest trim for Lulu (choose a 5.5x8.5 paper size in File &gt; Page Setup). Tighter margins for the smaller page. For articles, essays, and short works.</string>
 	<key>IATemplateAuthor</key>
 	<string>Seth C. Oranburg</string>
 	<key>IATemplateAuthorURL</key>

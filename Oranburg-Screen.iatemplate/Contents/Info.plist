@@ -2,14 +2,30 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>CFBundleDevelopmentRegion</key>
+	<string>en</string>
+	<key>CFBundleInfoDictionaryVersion</key>
+	<string>6.0</string>
+	<key>CFBundlePackageType</key>
+	<string>BNDL</string>
 	<key>CFBundleName</key>
 	<string>Oranburg Screen</string>
 	<key>CFBundleIdentifier</key>
 	<string>io.github.oranburg.screen</string>
+	<key>CFBundleShortVersionString</key>
+	<string>2.0.0</string>
+	<key>CFBundleVersion</key>
+	<string>2</string>
 	<key>IATemplateDocumentFile</key>
 	<string>document</string>
+	<key>IATemplateHeaderHeight</key>
+	<integer>72</integer>
+	<key>IATemplateFooterHeight</key>
+	<integer>72</integer>
+	<key>IATemplateSupportsDiffHTML</key>
+	<false/>
 	<key>IATemplateDescription</key>
-	<string>On-screen reading and editing. Color heading hierarchy, comfortable line spacing, light and dark mode. No print formatting.</string>
+	<string>On-screen reading and editing. Color heading hierarchy, comfortable line spacing, light and dark mode. Prints plainly with 1in margins.</string>
 	<key>IATemplateAuthor</key>
 	<string>Seth C. Oranburg</string>
 	<key>IATemplateAuthorURL</key>

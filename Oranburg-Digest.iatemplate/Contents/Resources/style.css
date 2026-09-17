@@ -1,11 +1,28 @@
 /* =========================================================
    ORANBURG DIGEST (5.5x8.5) — Essays & Pamphlets
    Margins per Lulu specs for 61-150 pages.
+
+   Trim 5.5in x 8.5in.
+   Top 0.5in    = IATemplateHeaderHeight 36pt (Info.plist)
+   Bottom 0.625in = IATemplateFooterHeight 45pt (Info.plist)
+   Inside (gutter) 0.75in, applied on the left
+   Outside 0.5in, applied on the right
+
+   iA Writer takes the paper size from File > Page Setup, not
+   from CSS. Create a custom paper size of 5.5in x 8.5in with
+   zero margins and choose it before exporting. The @page
+   size below is ignored by WebKit and honored by Chromium-based
+   renderers (for example a pandoc or headless-Chrome PDF).
+   WebKit cannot mirror margins on verso pages.
    ========================================================= */
 
 @import url("oranburg-book-base.css");
 
 @page {
     size: 5.5in 8.5in;
-    margin: 0.5in 0.5in 0.625in 0.75in;  /* top outside bottom inside(gutter) */
+}
+
+:root {
+    --page-margin-left:  0.75in;   /* inside (gutter) */
+    --page-margin-right: 0.5in;   /* outside */
 }

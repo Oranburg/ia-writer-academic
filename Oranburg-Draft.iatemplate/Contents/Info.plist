@@ -2,10 +2,20 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>CFBundleDevelopmentRegion</key>
+	<string>en</string>
+	<key>CFBundleInfoDictionaryVersion</key>
+	<string>6.0</string>
+	<key>CFBundlePackageType</key>
+	<string>BNDL</string>
 	<key>CFBundleName</key>
 	<string>Oranburg Draft</string>
 	<key>CFBundleIdentifier</key>
 	<string>io.github.oranburg.draft</string>
+	<key>CFBundleShortVersionString</key>
+	<string>2.0.0</string>
+	<key>CFBundleVersion</key>
+	<string>2</string>
 	<key>IATemplateDocumentFile</key>
 	<string>document</string>
 	<key>IATemplateHeaderFile</key>
@@ -13,9 +23,11 @@
 	<key>IATemplateFooterFile</key>
 	<string>footer</string>
 	<key>IATemplateHeaderHeight</key>
-	<integer>50</integer>
+	<integer>72</integer>
 	<key>IATemplateFooterHeight</key>
-	<integer>36</integer>
+	<integer>72</integer>
+	<key>IATemplateSupportsDiffHTML</key>
+	<false/>
 	<key>IATemplateDescription</key>
 	<string>Working manuscript draft. 8.5x11, Crimson Text 12pt, 1.15 spacing. Color headings on screen, all-black for PDF. Running header with title and page number.</string>
 	<key>IATemplateAuthor</key>

@@ -2,13 +2,13 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="style.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <link rel="stylesheet" media="all" href="style.css">
+    <script src="oranburg.js"></script>
 </head>
-<!--
-    data-document: iA Writer renders Markdown content here.
-    The body element must carry this attribute.
--->
-<body data-document>
-</body>
+<!-- iA Writer replaces the contents of the element that carries
+     data-document with the rendered Markdown, then fires
+     "ia-writer-change" on it. The data-oranburg-* attributes switch
+     on features of oranburg.js. -->
+<body data-document data-oranburg-citations="inline" data-oranburg-outline="legal">&nbsp;</body>
 </html>

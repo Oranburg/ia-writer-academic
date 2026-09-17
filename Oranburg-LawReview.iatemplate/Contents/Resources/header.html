@@ -1,26 +1,18 @@
 <!DOCTYPE html>
-<html lang="en">
+<html id="page-header" lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="style.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <link rel="stylesheet" media="all" href="style.css">
 </head>
+<!-- Running head. Printed and exported pages only; turn on
+     Settings > Templates > Printing & PDF Export > Headers.
+     Drawn inside IATemplateHeaderHeight (Info.plist). -->
 <body>
-    <!--
-        RUNNING HEAD (appears on every page except title page).
-        Three-column flex layout: short title | blank | page number.
-        
-        data-short-title: iA Writer fills in your document's short title.
-        data-page: iA Writer fills in the current page number.
-        
-        CUSTOMIZATION: If you want a different header, adjust the
-        HTML structure below. The CSS class names are in style.css
-        under "11. HEADER (running head)".
-    -->
     <div class="header-container">
-        <div class="header-left" data-short-title></div>
-        <div class="header-center"></div>
-        <div class="header-right" data-page></div>
+        <span class="header-left" data-title>&nbsp;</span>
+        <span class="header-center"></span>
+        <span class="header-right" data-page-number>&nbsp;</span>
     </div>
 </body>
 </html>

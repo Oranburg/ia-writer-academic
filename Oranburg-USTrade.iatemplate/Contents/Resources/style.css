@@ -1,11 +1,28 @@
 /* =========================================================
    ORANBURG US TRADE (6x9) — Monographs
    Margins per Lulu specs for 151-400 pages.
+
+   Trim 6in x 9in.
+   Top 0.625in    = IATemplateHeaderHeight 45pt (Info.plist)
+   Bottom 0.75in = IATemplateFooterHeight 54pt (Info.plist)
+   Inside (gutter) 1.0in, applied on the left
+   Outside 0.625in, applied on the right
+
+   iA Writer takes the paper size from File > Page Setup, not
+   from CSS. Create a custom paper size of 6in x 9in with
+   zero margins and choose it before exporting. The @page
+   size below is ignored by WebKit and honored by Chromium-based
+   renderers (for example a pandoc or headless-Chrome PDF).
+   WebKit cannot mirror margins on verso pages.
    ========================================================= */
 
 @import url("oranburg-book-base.css");
 
 @page {
     size: 6in 9in;
-    margin: 0.625in 0.625in 0.75in 1.0in;  /* top outside bottom inside(gutter) */
+}
+
+:root {
+    --page-margin-left:  1.0in;   /* inside (gutter) */
+    --page-margin-right: 0.625in;   /* outside */
 }

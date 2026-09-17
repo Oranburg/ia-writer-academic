@@ -5,26 +5,33 @@
    Bluebook-compliant law review manuscript.
    Legal outline numbering (I -> A -> 1 -> i -> a).
    Screen: color headings, Crimson Text/Oswald.
-   Print:  all black, 8.5x11, 1.15 spacing.
+   Print:  all black, 8.5x11, 1.15 spacing,
+           1in top and bottom, 1.25in left and right.
 
-   Imports shared variables from oranburg-variables.css.
+   Top and bottom margins: IATemplateHeaderHeight and
+   IATemplateFooterHeight (72pt = 1in) in Info.plist.
+   Paper size: File > Page Setup (US Letter).
+
+   Numbering is CSS counters. oranburg.js (enabled by
+   data-oranburg-outline="legal" on <body>) marks the
+   structural headings .unnumbered, headings that already
+   carry a typed number .self-numbered, and numbers {{TOC}}.
    ========================================================= */
 
 @import url("oranburg-variables.css");
+@import url("oranburg-common.css");
 
 
 /* =========================================================
    1. PAGE SETUP
    ========================================================= */
 @page {
-    margin: 1in 1.25in;
+    size: letter;
 }
 
-html {
-    background-color: var(--color-bg);
-    color: var(--color-text);
-    margin: 0;
-    padding: 0;
+:root {
+    --page-margin-left:  1.25in;
+    --page-margin-right: 1.25in;
 }
 
 body {
@@ -42,16 +49,14 @@ body {
     body {
         max-width: 42em;
         margin: 0 auto;
-        padding: 1em 2em;
+        padding: 0 2em;     /* iA Writer controls vertical padding in Preview */
         line-height: var(--line-height-screen);
+        font-size: 1rem;
     }
 }
 
 @media print {
-    html, body {
-        background: transparent !important;
-        color: var(--black) !important;
-        font-size: var(--font-size-body);
+    body {
         -webkit-hyphens: auto;
         hyphens: auto;
     }
@@ -65,11 +70,8 @@ body > :first-child {
 
 /* =========================================================
    2. NIGHT MODE
+   Colors come from oranburg-variables.css §4.
    ========================================================= */
-.night-mode {
-    background-color: var(--black);
-    color: var(--white);
-}
 
 
 /* =========================================================
@@ -78,12 +80,11 @@ body > :first-child {
 p {
     text-indent: var(--indent-para);
     margin: 0;
-    orphans: 3;
-    widows: 3;
 }
 
-h1 + p, h2 + p, h3 + p, h4 + p, h5 + p,
-blockquote + p, .no-indent {
+h1 + p, h2 + p, h3 + p, h4 + p, h5 + p, h6 + p,
+blockquote + p, figure + p, table + p, ul + p, ol + p,
+.page-break + p, .no-indent {
     text-indent: 0;
 }
 
@@ -96,19 +97,25 @@ li p { text-indent: 0; }
 blockquote {
     margin: 0.75em var(--indent-block);
     text-indent: 0;
-    font-size: 11pt;
+    font-size: var(--font-size-block);
     line-height: 1.2;
     font-style: normal;
     color: var(--color-text);
 }
 
-.night-mode blockquote {
-    border-left: 3px solid var(--blue-light);
-    padding-left: 0.75em;
-    margin-left: 0.25in;
+@media screen {
+    blockquote {
+        line-height: 1.45;
+    }
+
+    .night-mode blockquote {
+        border-left: 3px solid var(--color-rule);
+        padding-left: 0.75em;
+        margin-left: 0.25in;
+    }
 }
 
-blockquote p { text-indent: 0; }
+blockquote p { text-indent: 0; margin-bottom: 0.5em; }
 
 
 /* =========================================================
@@ -124,9 +131,8 @@ blockquote p { text-indent: 0; }
 h1, h2, h3, h4, h5 {
     font-family: var(--font-heading);
     text-indent: 0;
+    line-height: 1.25;
     margin-bottom: 0.4em;
-    page-break-after: avoid;
-    break-after: avoid;
 }
 
 /* --- H1: Roman Numeral Parts --- */
@@ -148,8 +154,8 @@ h1::before {
 }
 
 /* First H1 = article title (suppress numbering, center) */
-h1:first-of-type {
-    font-size: 18pt;
+body > h1:first-of-type {
+    font-size: 1.5em;   /* 18pt */
     font-variant: normal;
     font-weight: bold;
     text-align: center;
@@ -162,10 +168,11 @@ h1:first-of-type {
     page-break-before: avoid;
 }
 
-h1:first-of-type::before { content: ""; }
+body > h1:first-of-type::before { content: ""; }
 
-h1:first-of-type + p {
-    font-size: 13pt;
+/* Byline paragraph under the title */
+body > h1:first-of-type + p {
+    font-size: 1.0833em;    /* 13pt */
     text-align: center;
     text-indent: 0;
     margin-top: 0;
@@ -188,26 +195,48 @@ h2::before {
     content: counter(h2c, upper-alpha) ". ";
 }
 
-/* Unnumbered H2s for structural sections */
-h2[id*="abstract" i],
-h2[id*="contents" i],
-h2[id*="introduction" i],
-h2[id*="conclusion" i],
-h2[id*="acknowledgment" i] {
+/* Unnumbered structural sections: Abstract, Contents,
+   Introduction, Conclusion, Acknowledgments, Appendix.
+   oranburg.js adds .unnumbered by heading text; the id
+   selectors cover exports that carry heading ids. */
+h1.unnumbered,
+h2.unnumbered,
+h2[id="abstract" i],
+h2[id="contents" i],
+h2[id="introduction" i],
+h2[id="conclusion" i],
+h2[id^="acknowledg" i] {
     text-align: center;
     font-variant: small-caps;
-    counter-increment: _dummy;
-    margin-top: 0;
-    page-break-before: always;
-    break-before: page;
+    counter-increment: none;
 }
 
-h2[id*="abstract" i]::before,
-h2[id*="contents" i]::before,
-h2[id*="introduction" i]::before,
-h2[id*="conclusion" i]::before,
-h2[id*="acknowledgment" i]::before {
-    content: "";
+h1.unnumbered { counter-reset: h2c 0 h3c 0 h4c 0 h5c 0; }
+h2.unnumbered { counter-reset: h3c 0 h4c 0 h5c 0; }
+
+@media print {
+    h1.unnumbered,
+    h2.unnumbered,
+    h2[id="abstract" i],
+    h2[id="contents" i],
+    h2[id="introduction" i],
+    h2[id="conclusion" i],
+    h2[id^="acknowledg" i] {
+        margin-top: 0;
+        page-break-before: always;
+        break-before: page;
+    }
+}
+
+h1.unnumbered::before,
+h2.unnumbered::before,
+h2[id="abstract" i]::before,
+h2[id="contents" i]::before,
+h2[id="introduction" i]::before,
+h2[id="conclusion" i]::before,
+h2[id^="acknowledg" i]::before,
+.self-numbered::before {
+    content: "" !important;
 }
 
 /* --- H3: Decimal Subsections --- */
@@ -229,7 +258,7 @@ h3::before {
 /* --- H4: Lower-Roman Sub-subsections --- */
 h4 {
     font-family: var(--font-body);
-    font-size: var(--font-size-body);
+    font-size: 1em;
     font-weight: normal;
     font-style: italic;
     text-align: left;
@@ -246,7 +275,7 @@ h4::before {
 /* --- H5: Lower-Alpha Sub-sub-subsections --- */
 h5 {
     font-family: var(--font-body);
-    font-size: var(--font-size-body);
+    font-size: 1em;
     font-weight: normal;
     font-style: normal;
     text-align: left;
@@ -260,92 +289,107 @@ h5::before {
     content: counter(h5c, lower-alpha) ". ";
 }
 
-/* Print: all headings black */
 @media print {
-    h1, h2, h3, h4, h5 {
-        page-break-after: avoid;
-        color: var(--black);
+    body > h1:first-of-type {
+        margin-top: 0.75in;
+        page-break-before: avoid;
+        break-before: avoid;
     }
-    h1:first-of-type { color: var(--black); }
 }
 
 
 /* =========================================================
    6. TABLE OF CONTENTS — Legal Outline Numbering
+   A hand-typed nested list right after a "Contents" heading
+   is numbered by counters. iA Writer's {{TOC}} (.TOC) is
+   numbered by oranburg.js from the headings themselves
+   (oranburg-common.css §7).
    ========================================================= */
-h2[id*="contents" i] ~ ul,
-.toc ul {
+h2.contents-heading + ul,
+h2[id="contents" i] + ul {
     list-style: none;
     padding-left: 0;
     counter-reset: toc1 0;
     font-family: var(--font-body);
-    font-size: var(--font-size-body);
+    font-size: 1em;
 }
 
-h2[id*="contents" i] ~ ul > li,
-.toc > ul > li {
+h2.contents-heading + ul > li,
+h2[id="contents" i] + ul > li {
     counter-increment: toc1;
     margin-bottom: 0.2em;
     padding-left: 1.5em;
     text-indent: -1.5em;
 }
 
-h2[id*="contents" i] ~ ul > li::before,
-.toc > ul > li::before {
+h2.contents-heading + ul > li::before,
+h2[id="contents" i] + ul > li::before {
     content: counter(toc1, upper-roman) ". ";
     font-variant: small-caps;
     font-family: var(--font-heading);
     margin-right: 0.4em;
 }
 
-h2[id*="contents" i] ~ ul ul,
-.toc ul ul {
+h2.contents-heading + ul ul,
+h2[id="contents" i] + ul ul {
     list-style: none;
     padding-left: 1.5em;
     counter-reset: toc2 0;
 }
 
-h2[id*="contents" i] ~ ul ul > li,
-.toc ul ul > li {
+h2.contents-heading + ul ul > li,
+h2[id="contents" i] + ul ul > li {
     counter-increment: toc2;
     padding-left: 1.5em;
     text-indent: -1.5em;
 }
 
-h2[id*="contents" i] ~ ul ul > li::before,
-.toc ul ul > li::before {
+h2.contents-heading + ul ul > li::before,
+h2[id="contents" i] + ul ul > li::before {
     content: counter(toc2, upper-alpha) ". ";
     margin-right: 0.4em;
 }
 
-h2[id*="contents" i] ~ ul ul ul,
-.toc ul ul ul {
+h2.contents-heading + ul ul ul,
+h2[id="contents" i] + ul ul ul {
     padding-left: 1.5em;
     counter-reset: toc3 0;
 }
 
-h2[id*="contents" i] ~ ul ul ul > li,
-.toc ul ul ul > li {
+h2.contents-heading + ul ul ul > li,
+h2[id="contents" i] + ul ul ul > li {
     counter-increment: toc3;
     font-style: italic;
 }
 
-h2[id*="contents" i] ~ ul ul ul > li::before,
-.toc ul ul ul > li::before {
+h2.contents-heading + ul ul ul > li::before,
+h2[id="contents" i] + ul ul ul > li::before {
     content: counter(toc3, decimal) ". ";
     margin-right: 0.4em;
 }
 
-.toc a, h2[id*="contents" i] ~ ul a {
+h2.contents-heading + ul a,
+h2[id="contents" i] + ul a {
     color: inherit;
     text-decoration: none;
 }
 
-h2[id*="contents" i] + ul {
-    break-after: page;
-    page-break-after: always;
+.TOC {
+    font-family: var(--font-body);
 }
 
+.TOC > ul > li {
+    margin-bottom: 0.2em;
+}
+
+@media print {
+    h2.contents-heading + ul,
+    h2[id="contents" i] + ul,
+    .TOC {
+        break-after: page;
+        page-break-after: always;
+    }
+}
 
 /* =========================================================
    7. FOOTNOTES & SUPERSCRIPTS
@@ -384,30 +428,14 @@ h2[id*="contents" i] + ul {
     margin-bottom: 0.5em;
 }
 
-a.footnote-back {
-    font-size: 0.8em;
-    text-decoration: none;
-    margin-left: 0.25em;
-    color: var(--color-muted);
-}
-
+/* Footnote reference: small Oswald figure */
 sup {
     font-family: var(--font-heading);
-    font-size: 8.5pt;
+    font-size: 0.7083em;    /* 8.5pt at 12pt body */
     line-height: 0;
     position: relative;
     vertical-align: baseline;
     top: -0.45em;
-}
-
-@media print {
-    .footnotes li {
-        page-break-inside: avoid;
-        break-inside: avoid;
-    }
-
-    .footnote { text-decoration: none; }
-    .reversefootnote { display: none; }
 }
 
 
@@ -415,17 +443,13 @@ sup {
    8. LINKS
    ========================================================= */
 a {
-    color: var(--blue-bright);
+    color: var(--color-link);
     text-decoration: underline;
-}
-
-.night-mode a {
-    color: var(--blue-light);
 }
 
 @media print {
     a {
-        color: var(--black);
+        color: inherit;
         text-decoration: none;
     }
 }
@@ -449,7 +473,7 @@ table {
     width: 100%;
     border-collapse: collapse;
     font-family: var(--font-body);
-    font-size: var(--font-size-body);
+    font-size: 1em;
     margin: 1em 0;
     text-align: left;
 }
@@ -457,6 +481,7 @@ table {
 th, td {
     padding: 0.3em 0.5em;
     vertical-align: top;
+    text-align: left;
     border-top: 1px solid currentColor;
     border-bottom: 1px solid currentColor;
 }
@@ -468,7 +493,7 @@ tbody tr:last-child td { border-bottom: 2px solid currentColor; }
 th { font-weight: bold; }
 
 caption {
-    font-size: 10pt;
+    font-size: 0.8333em;    /* 10pt */
     font-style: italic;
     text-align: left;
     margin-bottom: 0.25em;
@@ -482,15 +507,8 @@ caption {
 code, pre, kbd {
     font-family: var(--font-mono);
     font-size: 0.9em;
-    background-color: var(--gray-light);
+    background-color: var(--color-code-bg);
     border-radius: 3px;
-}
-
-.night-mode code,
-.night-mode pre,
-.night-mode kbd {
-    background-color: #111111;
-    color: var(--white);
 }
 
 code { padding: 0.15em 0.3em; }
@@ -506,7 +524,6 @@ pre code { padding: 0; background: none; }
 
 @media print {
     code, pre, kbd {
-        background-color: #f5f5f5 !important;
         color: var(--black) !important;
     }
 }
@@ -514,53 +531,42 @@ pre code { padding: 0; background: none; }
 
 /* =========================================================
    12. HEADER & FOOTER
+   Layout lives in oranburg-common.css §11.
    ========================================================= */
 .header-container {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-end;
-    font-family: var(--font-heading);
-    font-size: 9pt;
-    color: var(--color-muted);
-    padding: 0.2in 0 4pt 0;
     border-bottom: 1px solid currentColor;
 }
 
-.header-left { text-align: left; font-variant: small-caps; }
 .header-center { text-align: center; }
-.header-right { text-align: right; }
 
 .footer-container {
-    text-align: center;
-    font-family: var(--font-heading);
-    font-size: 8pt;
-    color: var(--color-muted);
-    padding-top: 0.1in;
-    letter-spacing: 0.05em;
     text-transform: uppercase;
 }
 
 
 /* =========================================================
-   13. TITLE PAGE
+   13. TITLE PAGE (title.html)
+   Full page: IATemplateTitleUsesHeaderAndFooterHeight is NO.
+   Page padding comes from oranburg-common.css §12.
    ========================================================= */
 .title-page {
     display: flex;
     flex-direction: column;
-    min-height: 8.75in;
+    height: 100%;
     padding-top: 0.75in;
+    box-sizing: border-box;
 }
 
 .title-page-title {
     font-family: var(--font-heading);
     font-size: 22pt;
     font-weight: bold;
+    line-height: 1.2;
     text-align: center;
     text-transform: uppercase;
     letter-spacing: 0.04em;
-    margin-bottom: 0.35in;
-    color: var(--color-title);
-    counter-increment: _dummy;
+    margin: 0 0 0.35in 0;
+    color: var(--black);    /* the title page exists only in print */
 }
 
 .title-page-title::before { content: "" !important; }
@@ -574,6 +580,13 @@ pre code { padding: 0; background: none; }
 }
 
 .title-page-author .asterisk { font-style: normal; }
+
+.title-page-date {
+    font-family: var(--font-body);
+    font-size: 11pt;
+    text-align: center;
+}
+
 .title-page-spacer { flex: 1; }
 
 .author-footnote {
@@ -585,24 +598,3 @@ pre code { padding: 0; background: none; }
     text-align: justify;
     color: var(--color-muted);
 }
-
-@media print {
-    .title-page-title { color: var(--black); }
-}
-
-
-/* =========================================================
-   14. iOS FONT SIZE SUPPORT
-   ========================================================= */
-html.content-size-xs  { font-size: 12px; }
-html.content-size-s   { font-size: 14px; }
-html.content-size-m   { font-size: 15px; }
-html.content-size-l   { font-size: 16px; }
-html.content-size-xl  { font-size: 18px; }
-html.content-size-xxl { font-size: 20px; }
-html.content-size-xxxl { font-size: 22px; }
-html.content-size-accessibility-m    { font-size: 24px; }
-html.content-size-accessibility-l    { font-size: 28px; }
-html.content-size-accessibility-xl   { font-size: 32px; }
-html.content-size-accessibility-xxl  { font-size: 36px; }
-html.content-size-accessibility-xxxl { font-size: 40px; }

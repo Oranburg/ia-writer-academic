@@ -1,11 +1,28 @@
 /* =========================================================
    ORANBURG EXECUTIVE (7x10) — Casebooks
    Margins per Lulu specs for 151-400 pages.
+
+   Trim 7in x 10in.
+   Top 0.75in    = IATemplateHeaderHeight 54pt (Info.plist)
+   Bottom 0.875in = IATemplateFooterHeight 63pt (Info.plist)
+   Inside (gutter) 1.125in, applied on the left
+   Outside 0.75in, applied on the right
+
+   iA Writer takes the paper size from File > Page Setup, not
+   from CSS. Create a custom paper size of 7in x 10in with
+   zero margins and choose it before exporting. The @page
+   size below is ignored by WebKit and honored by Chromium-based
+   renderers (for example a pandoc or headless-Chrome PDF).
+   WebKit cannot mirror margins on verso pages.
    ========================================================= */
 
 @import url("oranburg-book-base.css");
 
 @page {
     size: 7in 10in;
-    margin: 0.75in 0.75in 0.875in 1.125in;  /* top outside bottom inside(gutter) */
+}
+
+:root {
+    --page-margin-left:  1.125in;   /* inside (gutter) */
+    --page-margin-right: 0.75in;   /* outside */
 }

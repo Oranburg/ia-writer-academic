@@ -8,35 +8,23 @@
    ========================================================= */
 
 @import url("oranburg-variables.css");
+@import url("oranburg-common.css");
 
 
 /* =========================================================
    1. BASE
    ========================================================= */
-html {
-    background-color: var(--color-bg);
-    color: var(--color-text);
-}
-
 body {
     font-family: var(--font-ui);
-    font-size: 1.125rem;
+    font-size: 1rem;    /* html size follows View > Font Size */
     line-height: var(--line-height-screen);
     max-width: 42em;
     margin: 0 auto;
-    padding: 1.5em 2em;
+    padding: 0 2em;     /* iA Writer controls vertical padding in Preview */
     -webkit-font-kerning: normal;
     font-kerning: normal;
     text-rendering: optimizeLegibility;
     word-wrap: break-word;
-}
-
-@media screen and (min-width: 40rem) {
-    body { font-size: 1.25rem; }
-}
-
-@media screen and (min-width: 50rem) {
-    body { font-size: 1.375rem; }
 }
 
 body > :first-child {
@@ -47,11 +35,8 @@ body > :first-child {
 
 /* =========================================================
    2. NIGHT MODE
+   Colors come from oranburg-variables.css §4.
    ========================================================= */
-.night-mode {
-    background-color: var(--black);
-    color: var(--white);
-}
 
 
 /* =========================================================
@@ -65,7 +50,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 /* Title: first H1 in document */
-h1:first-of-type {
+body > h1:first-of-type {
     font-size: 2em;
     font-weight: 700;
     text-align: center;
@@ -76,9 +61,6 @@ h1:first-of-type {
     border-bottom: 2px solid var(--color-title);
 }
 
-.night-mode h1:first-of-type {
-    border-bottom-color: var(--yellow);
-}
 
 /* Section headings */
 h1 {
@@ -132,15 +114,11 @@ p {
    5. BLOCKQUOTES
    ========================================================= */
 blockquote {
-    border-left: 3px solid var(--blue-bright);
+    border-left: 3px solid var(--color-rule);
     margin-left: 0;
     padding-left: 1.2em;
     color: var(--color-text);
     font-style: normal;
-}
-
-.night-mode blockquote {
-    border-left-color: var(--blue-light);
 }
 
 
@@ -148,12 +126,8 @@ blockquote {
    6. LINKS
    ========================================================= */
 a {
-    color: var(--blue-bright);
+    color: var(--color-link);
     text-decoration: underline;
-}
-
-.night-mode a {
-    color: var(--blue-light);
 }
 
 
@@ -192,8 +166,10 @@ td {
     vertical-align: top;
 }
 
-.night-mode th { border-bottom-color: var(--white); }
-.night-mode td { border-bottom-color: #333333; }
+@media screen {
+    .night-mode th { border-bottom-color: var(--white); }
+    .night-mode td { border-bottom-color: #333333; }
+}
 
 
 /* =========================================================
@@ -202,14 +178,8 @@ td {
 code, pre, kbd {
     font-family: var(--font-mono);
     font-size: 0.9em;
-    background-color: var(--gray-light);
+    background-color: var(--color-code-bg);
     border-radius: 3px;
-}
-
-.night-mode code,
-.night-mode pre,
-.night-mode kbd {
-    background-color: #111111;
 }
 
 code { padding: 0.15em 0.3em; }
@@ -233,14 +203,12 @@ pre code { padding: 0; background: none; }
     font-size: 0.9em;
 }
 
-sup {
-    font-size: 0.75em;
-    line-height: 0;
+.footnotes hr {
+    display: none;  /* the border-top above is the rule */
 }
 
-a.footnote-back {
-    text-decoration: none;
-    color: var(--color-muted);
+.footnotes ol {
+    padding-left: 2em;
 }
 
 
@@ -257,20 +225,3 @@ figcaption {
     color: var(--color-muted);
     margin-top: 0.4em;
 }
-
-
-/* =========================================================
-   12. iOS FONT SIZE SUPPORT
-   ========================================================= */
-html.content-size-xs  { font-size: 12px; }
-html.content-size-s   { font-size: 14px; }
-html.content-size-m   { font-size: 15px; }
-html.content-size-l   { font-size: 16px; }
-html.content-size-xl  { font-size: 18px; }
-html.content-size-xxl { font-size: 20px; }
-html.content-size-xxxl { font-size: 22px; }
-html.content-size-accessibility-m    { font-size: 24px; }
-html.content-size-accessibility-l    { font-size: 28px; }
-html.content-size-accessibility-xl   { font-size: 32px; }
-html.content-size-accessibility-xxl  { font-size: 36px; }
-html.content-size-accessibility-xxxl { font-size: 40px; }
