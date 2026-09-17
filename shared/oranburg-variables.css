@@ -1,11 +1,53 @@
 /* =========================================================
-   ORANBURG STYLE — Shared CSS Custom Properties
-   Used by all Oranburg iA Writer templates.
+   ORANBURG STYLE — SHARED VARIABLES
+   Seth C. Oranburg
 
-   Palette: CUA-origin, neutral semantic names.
-   Fonts: Crimson Text (body), Oswald (headings),
-          Roboto (UI), Roboto Mono (code).
+   Palette: Catholic University of America brand
+            (brand.catholic.edu/color): Catholic Blue #0A3255
+            and Catholic Red #B21F2C carry the visual weight.
+   Fonts:   Crimson Text (body), Oswald (headings),
+            Roboto (UI), Roboto Mono (code).
+
+   This file is the single source. tools/build.py copies it
+   into every .iatemplate bundle, because iA Writer copies a
+   bundle on install and cannot follow paths outside it.
    ========================================================= */
+
+
+/* =========================================================
+   0. HEBREW FALLBACK FACES
+   Crimson Text, Oswald and Roboto have no Hebrew glyphs.
+   These faces cover only the Hebrew blocks (unicode-range),
+   so Latin text still uses the brand fonts and Hebrew text,
+   including nikud and cantillation, uses the first installed
+   face that has it. SBL Hebrew and Taamey Frank are optional
+   installs; New Peninim MT, Times New Roman and Arial Hebrew
+   ship with macOS.
+   ========================================================= */
+@font-face {
+    font-family: "Oranburg Hebrew Serif";
+    src: local("SBL Hebrew"), local("SBLHebrew"),
+         local("Taamey Frank CLM"), local("TaameyFrankCLM-Medium"),
+         local("New Peninim MT"), local("NewPeninimMT"),
+         local("Times New Roman"), local("TimesNewRomanPSMT");
+    unicode-range: U+0590-05FF, U+FB1D-FB4F;
+}
+
+@font-face {
+    font-family: "Oranburg Hebrew Serif";
+    font-weight: 700;
+    src: local("SBL Hebrew"), local("SBLHebrew"),
+         local("New Peninim MT Bold"), local("NewPeninimMT-Bold"),
+         local("Times New Roman Bold"), local("TimesNewRomanPS-BoldMT");
+    unicode-range: U+0590-05FF, U+FB1D-FB4F;
+}
+
+@font-face {
+    font-family: "Oranburg Hebrew Sans";
+    src: local("Arial Hebrew"), local("ArialHebrew"),
+         local("SBL Hebrew"), local("Times New Roman");
+    unicode-range: U+0590-05FF, U+FB1D-FB4F;
+}
 
 
 /* =========================================================
@@ -13,8 +55,8 @@
    ========================================================= */
 :root {
     /* Primary */
-    --blue-deep:        #0A3255;
-    --red-deep:         #B21F2C;
+    --blue-deep:        #0A3255;    /* Catholic Blue */
+    --red-deep:         #B21F2C;    /* Catholic Red */
 
     /* Secondary */
     --red-bright:       #E82F35;
@@ -24,12 +66,13 @@
 
     /* Tertiary */
     --yellow:           #FFD65C;
-    --teal:             #B5E1E1;
+    --teal:             #B5E1E1;    /* Light Blue-Green */
 
     /* Neutrals */
     --black:            #000000;
     --white:            #FFFFFF;
     --gray-muted:       #555555;
+    --gray-cool:        #A7A9AC;    /* brand neutral */
     --gray-light:       #F8F9FA;
 }
 
@@ -38,13 +81,14 @@
    2. FONT STACKS
    ========================================================= */
 :root {
-    --font-body:        'Crimson Text', Georgia, 'Times New Roman', serif;
-    --font-heading:     'Oswald', 'Helvetica Neue', Arial, sans-serif;
-    --font-ui:          'Roboto', 'Helvetica Neue', Arial, sans-serif;
-    --font-mono:        'Roboto Mono', 'Consolas', 'Courier New', monospace;
+    --font-body:        "Oranburg Hebrew Serif", "Crimson Text", Georgia, "Times New Roman", serif;
+    --font-heading:     "Oranburg Hebrew Sans", "Oswald", "Helvetica Neue", Arial, sans-serif;
+    --font-ui:          "Oranburg Hebrew Sans", "Roboto", "Helvetica Neue", Arial, sans-serif;
+    --font-mono:        "Roboto Mono", "SF Mono", Menlo, Consolas, "Courier New", monospace;
+    --font-typewriter:  "Courier Prime", "Courier New", Courier, monospace;
 
-    /* Submission override (law reviews) */
-    --font-submission:  'Times New Roman', 'Times', serif;
+    /* Submission override (law reviews). TNR has Hebrew on macOS. */
+    --font-submission:  "Times New Roman", Times, serif;
 }
 
 
@@ -56,6 +100,11 @@
     --color-bg:         var(--white);
     --color-text:       var(--black);
     --color-muted:      var(--gray-muted);
+    --color-link:       var(--blue-bright);
+    --color-rule:       var(--blue-bright);
+    --color-code-bg:    var(--gray-light);
+    --color-mark-bg:    rgba(255, 214, 92, 0.55);   /* Yellow */
+    --color-flag:       var(--red-deep);             /* unresolved citation */
 
     --color-title:      var(--blue-deep);       /* Setext === or first H1 */
     --color-h1:         var(--blue-deep);        /* # Section heading */
@@ -67,12 +116,18 @@
 
 /* =========================================================
    4. HEADING COLORS — NIGHT MODE
+   iA Writer puts .night-mode on <html> when dark mode is on.
    Pure black background (#000000), bright colors.
    ========================================================= */
 .night-mode {
     --color-bg:         var(--black);
     --color-text:       var(--white);
-    --color-muted:      #9CA3AF;
+    --color-muted:      var(--gray-cool);
+    --color-link:       var(--blue-light);
+    --color-rule:       var(--blue-light);
+    --color-code-bg:    #111111;
+    --color-mark-bg:    rgba(255, 214, 92, 0.35);
+    --color-flag:       var(--red-light);
 
     --color-title:      var(--yellow);           /* Gold title on black */
     --color-h1:         var(--blue-light);       /* Light blue sections */
@@ -86,12 +141,20 @@
    5. PRINT COLORS — ALL BLACK
    No color in print output. Hierarchy through
    font family, weight, and size only.
+   Declared after .night-mode so it wins at equal specificity
+   even if an export happens while dark mode is on.
    ========================================================= */
 @media print {
-    :root {
+    :root,
+    .night-mode {
         --color-bg:     transparent;
         --color-text:   var(--black);
         --color-muted:  #444444;
+        --color-link:   var(--black);
+        --color-rule:   var(--black);
+        --color-code-bg: #F5F5F5;
+        --color-mark-bg: #E6E6E6;
+        --color-flag:   var(--black);
 
         --color-title:  var(--black);
         --color-h1:     var(--black);
@@ -103,7 +166,10 @@
 
 
 /* =========================================================
-   6. SPACING
+   6. SPACING AND SIZES
+   Print body is 12pt. Sizes that must scale with iA Writer's
+   View > Font Size on screen are in em, computed against the
+   12pt print body so print output is unchanged.
    ========================================================= */
 :root {
     --line-height-body:     1.15;
@@ -111,8 +177,9 @@
     --line-height-double:   2.0;        /* Law review submission */
     --line-height-footnote: 1.2;
 
-    --font-size-body:       12pt;
-    --font-size-footnote:   10pt;
+    --font-size-body:       12pt;       /* print only; screen uses 1rem */
+    --font-size-footnote:   0.8333em;   /* 10pt at 12pt body */
+    --font-size-block:      0.9167em;   /* 11pt at 12pt body */
 
     --indent-para:          0.5in;      /* First-line indent for book/article */
     --indent-block:         0.5in;      /* Bluebook block quote indent */
@@ -120,24 +187,42 @@
 
 
 /* =========================================================
-   7. PRINT HEADING HIERARCHY (Oranburg Style D-015)
-   Used by @media print rules in individual templates.
-   On screen, these are overridden by color + the same fonts.
+   7. HEADING HIERARCHY (Oranburg Style D-015)
+   H1: Oswald Bold 16pt      — chapter/document titles
+   H2: Oswald SemiBold 14pt  — major sections
+   H3: Oswald Regular 12pt   — subsections
+   H4: Roboto Medium 12pt    — minor subdivisions
+   Expressed in em so screen scales; equal to the pt values
+   at the 12pt print body.
    ========================================================= */
 :root {
-    /* H1: Oswald Bold 16pt — chapter/document titles */
-    --print-h1-size:    16pt;
+    --print-h1-size:    1.3333em;   /* 16pt */
     --print-h1-weight:  700;
 
-    /* H2: Oswald SemiBold 14pt — major sections */
-    --print-h2-size:    14pt;
+    --print-h2-size:    1.1667em;   /* 14pt */
     --print-h2-weight:  600;
 
-    /* H3: Oswald Regular 12pt — subsections */
-    --print-h3-size:    12pt;
+    --print-h3-size:    1em;        /* 12pt */
     --print-h3-weight:  400;
 
-    /* H4: Roboto Medium 12pt — minor subdivisions */
-    --print-h4-size:    12pt;
+    --print-h4-size:    1em;        /* 12pt */
     --print-h4-weight:  500;
+}
+
+
+/* =========================================================
+   8. PAGE GEOMETRY
+   iA Writer takes the paper size from File > Page Setup and
+   the top and bottom margins from IATemplateHeaderHeight and
+   IATemplateFooterHeight in Info.plist. Left and right
+   margins are ours: each template sets these two variables,
+   and oranburg-common.css applies them as body padding in
+   print, in the document and in the header and footer pages,
+   so the running head lines up with the text block.
+   ========================================================= */
+:root {
+    --page-margin-left:     1in;
+    --page-margin-right:    1in;
+    --header-gap:           18pt;   /* space between running head and text */
+    --footer-gap:           12pt;
 }

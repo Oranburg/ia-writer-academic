@@ -1,0 +1,270 @@
+/* =========================================================
+   ORANBURG STYLE — TEMPLATE SCRIPT
+   Seth C. Oranburg
+
+   iA Writer replaces the innerHTML of <body data-document>
+   and then dispatches an "ia-writer-change" event on that
+   element (it does not bubble). This script runs once on
+   load and again after every such event. Every step is
+   idempotent, because the next keystroke brings fresh HTML.
+
+   What it does, all of it optional per template through
+   attributes on <body>:
+   1. Footnote references: normalizes the "[1]" form some
+      iA Writer code paths emit into a superscript.
+   2. Citations (data-oranburg-citations="inline"): puts the
+      full text of a [#CiteKey]: definition where iA Writer
+      prints "[2]", and hides the duplicate list entry.
+   3. Headings (data-oranburg-outline="legal"): marks
+      Abstract, Contents, Introduction, Conclusion and
+      similar headings .unnumbered, marks headings that
+      already carry a typed number .self-numbered, marks the
+      first H1 .doc-title, and writes the legal outline
+      number (I, A, 1, i, a) onto {{TOC}} links.
+   4. Law of the Firm boxes: an H4 starting with 📜, 💡 or
+      📄 and the blockquote after it get box-* classes.
+   5. Title page: fills the author when iA Writer has none.
+
+   Shared source: shared/oranburg.js. tools/build.py copies it
+   into each bundle.
+   ========================================================= */
+(function () {
+    "use strict";
+
+    var DEFAULT_AUTHOR = "Seth C. Oranburg";
+
+    var STRUCTURAL = /^(abstract|contents|table of contents|introduction|conclusion|acknowledg(e)?ments?|appendix(\b.*)?|epigraph|preface|foreword|summary)$/i;
+
+    var SELF_NUMBERED = /^\s*(?:part\s+)?(?:[IVXLC]+|[A-Z]|\d+|[ivxlc]+|[a-z])[.)]\s+/;
+
+    var BOXES = [
+        { mark: "\uD83D\uDCDC", name: "source" },       // 📜
+        { mark: "\uD83D\uDCA1", name: "insight" },      // 💡
+        { mark: "\uD83D\uDCC4", name: "transaction" }   // 📄
+    ];
+
+    function each(list, fn) {
+        Array.prototype.forEach.call(list, fn);
+    }
+
+    function headingText(h) {
+        return (h.textContent || "").replace(/\s+/g, " ").replace(/[.:\s]+$/, "").trim();
+    }
+
+    /* 1. Footnote references ------------------------------------------ */
+    function normalizeFootnoteRefs(root) {
+        each(root.querySelectorAll("a.footnote"), function (a) {
+            var m = /^\s*\[(\d+)\]\s*$/.exec(a.textContent || "");
+            if (m) {
+                a.textContent = m[1];
+            }
+            if (!a.parentElement || a.parentElement.tagName !== "SUP") {
+                var sup = document.createElement("sup");
+                a.parentNode.insertBefore(sup, a);
+                sup.appendChild(a);
+            }
+        });
+    }
+
+    /* 2. Citations ----------------------------------------------------- */
+    function citationEntry(root, href) {
+        if (!href || href.charAt(0) !== "#") {
+            return null;
+        }
+        var id = decodeURIComponent(href.slice(1));
+        var li = document.getElementById(id);
+        return li && root.contains(li) ? li : null;
+    }
+
+    function citationHTML(li) {
+        var clone = li.cloneNode(true);
+        each(clone.querySelectorAll(".citekey, .reversefootnote"), function (n) {
+            n.parentNode.removeChild(n);
+        });
+        var ps = clone.querySelectorAll("p");
+        var html = ps.length ? Array.prototype.map.call(ps, function (p) {
+            return p.innerHTML;
+        }).join(" ") : clone.innerHTML;
+        // Drop the terminal period: the footnote supplies its own punctuation.
+        return html.replace(/\s+$/, "").replace(/\.$/, "");
+    }
+
+    function inlineCitations(root) {
+        each(root.querySelectorAll("a.citation"), function (a) {
+            if (a.getAttribute("data-oranburg-cite") === "done") {
+                return;
+            }
+            var li = citationEntry(root, a.getAttribute("href"));
+            if (!li) {
+                return;
+            }
+            var locator = a.querySelector(".locator");
+            var key = a.querySelector(".citekey");
+            var html = '<span class="cite-text">' + citationHTML(li) + "</span>";
+            if (locator && locator.textContent.trim()) {
+                html += ', <span class="locator">' + locator.innerHTML + "</span>";
+            }
+            a.innerHTML = html;
+            if (key) {
+                a.appendChild(key);
+            }
+            a.setAttribute("data-oranburg-cite", "done");
+            li.classList.add("oranburg-inlined");
+        });
+    }
+
+    /* 3. Headings and outline ----------------------------------------- */
+    var ROMAN = [[1000, "M"], [900, "CM"], [500, "D"], [400, "CD"], [100, "C"],
+                 [90, "XC"], [50, "L"], [40, "XL"], [10, "X"], [9, "IX"],
+                 [5, "V"], [4, "IV"], [1, "I"]];
+
+    function roman(n) {
+        var out = "";
+        ROMAN.forEach(function (p) {
+            while (n >= p[0]) { out += p[1]; n -= p[0]; }
+        });
+        return out;
+    }
+
+    function alpha(n) {
+        var out = "";
+        while (n > 0) {
+            n -= 1;
+            out = String.fromCharCode(65 + (n % 26)) + out;
+            n = Math.floor(n / 26);
+        }
+        return out;
+    }
+
+    var FORMATS = [
+        function (n) { return roman(n) + "."; },
+        function (n) { return alpha(n) + "."; },
+        function (n) { return n + "."; },
+        function (n) { return roman(n).toLowerCase() + "."; },
+        function (n) { return alpha(n).toLowerCase() + "."; }
+    ];
+
+    function markHeadings(root, legal) {
+        var headings = root.querySelectorAll("h1, h2, h3, h4, h5, h6");
+        var firstH1 = root.querySelector(":scope > h1");
+        if (firstH1) {
+            firstH1.classList.add("doc-title");
+        }
+        if (!legal) {
+            return;
+        }
+        var counters = [0, 0, 0, 0, 0];
+        each(headings, function (h) {
+            var level = parseInt(h.tagName.charAt(1), 10);
+            var text = headingText(h);
+            if (h === firstH1 || h.classList.contains("box-title")) {
+                return;
+            }
+            if (level <= 2 && STRUCTURAL.test(text)) {
+                h.classList.add("unnumbered");
+                if (/^(table of )?contents$/i.test(text)) {
+                    h.classList.add("contents-heading");
+                }
+                for (var j = level - 1; j < 5; j++) { counters[j] = 0; }
+                return;
+            }
+            if (SELF_NUMBERED.test(text)) {
+                h.classList.add("self-numbered");
+            }
+            if (level > 5) {
+                return;
+            }
+            counters[level - 1] += 1;
+            for (var k = level; k < 5; k++) { counters[k] = 0; }
+            h.setAttribute("data-outline", FORMATS[level - 1](counters[level - 1]));
+        });
+    }
+
+    function numberTOC(root) {
+        var byText = {};
+        each(root.querySelectorAll("h1, h2, h3, h4, h5, h6"), function (h) {
+            var t = headingText(h);
+            if (!(t in byText)) { byText[t] = h; }
+        });
+        each(root.querySelectorAll(".TOC a"), function (a) {
+            var href = a.getAttribute("href") || "";
+            var target = href.charAt(0) === "#"
+                ? document.getElementById(decodeURIComponent(href.slice(1))) : null;
+            if (!target) {
+                target = byText[headingText(a)] || null;
+            }
+            var outline = target && !target.classList.contains("self-numbered")
+                ? target.getAttribute("data-outline") : null;
+            if (outline) {
+                a.setAttribute("data-outline", outline);
+            } else {
+                a.removeAttribute("data-outline");
+            }
+            a.classList.toggle("toc-doc-title", !!target && target.classList.contains("doc-title"));
+        });
+    }
+
+    /* 4. Law of the Firm boxes ---------------------------------------- */
+    function markBoxes(root) {
+        each(root.querySelectorAll("h4"), function (h) {
+            var text = (h.textContent || "").trim();
+            BOXES.forEach(function (box) {
+                if (text.indexOf(box.mark) !== 0) {
+                    return;
+                }
+                h.classList.add("box-title", "box-" + box.name);
+                var next = h.nextElementSibling;
+                if (next && next.tagName === "BLOCKQUOTE") {
+                    next.classList.add("box-body", "box-" + box.name);
+                }
+            });
+        });
+    }
+
+    /* 5. Title page author ---------------------------------------------- */
+    function fillAuthor() {
+        each(document.querySelectorAll("[data-author]"), function (el) {
+            if (!(el.textContent || "").replace(/ /g, " ").trim()) {
+                el.textContent = el.getAttribute("data-oranburg-default-author") || DEFAULT_AUTHOR;
+            }
+        });
+    }
+
+    /* Driver ----------------------------------------------------------- */
+    function run() {
+        var root = document.querySelector("[data-document]");
+        if (root) {
+            try {
+                normalizeFootnoteRefs(root);
+                if (root.getAttribute("data-oranburg-citations") === "inline") {
+                    inlineCitations(root);
+                }
+                markBoxes(root);
+                markHeadings(root, root.getAttribute("data-oranburg-outline") === "legal");
+                numberTOC(root);
+            } catch (e) {
+                if (window.console) { console.error("oranburg.js", e); }
+            }
+        }
+        fillAuthor();
+    }
+
+    function attach() {
+        var root = document.querySelector("[data-document]");
+        if (root) {
+            root.addEventListener("ia-writer-change", run);
+        }
+        each(document.querySelectorAll("[data-author]"), function (el) {
+            el.addEventListener("ia-writer-change", fillAuthor);
+        });
+        run();
+    }
+
+    if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", attach);
+    } else {
+        attach();
+    }
+
+    window.Oranburg = { run: run };
+})();

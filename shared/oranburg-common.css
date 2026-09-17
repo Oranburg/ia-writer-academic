@@ -1,0 +1,527 @@
+/* =========================================================
+   ORANBURG STYLE — COMMON iA WRITER MARKUP
+   Seth C. Oranburg
+
+   Rules every Oranburg template needs for the HTML that
+   iA Writer 8 actually emits: footnotes, citations, content
+   blocks, page breaks, {{TOC}}, highlights, math, Hebrew and
+   other right-to-left text, the View > Font Size classes,
+   running heads and footers, and the Law of the Firm boxes.
+
+   Imported by each template's style.css after
+   oranburg-variables.css. Single source; tools/build.py
+   copies it into every bundle.
+   ========================================================= */
+
+
+/* =========================================================
+   1. SCREEN FONT SIZE
+   iA Writer 8 sets html.content-size-* from View > Font Size
+   (and from the system text size on iOS). The px values match
+   iA Writer's own templates so Cmd-+ and Cmd-- behave the
+   same. Screen only: print sizes are fixed in pt.
+   ========================================================= */
+@media screen {
+    html { font-size: 18px; }
+
+    html.content-size-4xs  { font-size: 11px; }
+    html.content-size-3xs  { font-size: 12px; }
+    html.content-size-2xs  { font-size: 13px; }
+    html.content-size-xs   { font-size: 14px; }
+    html.content-size-s    { font-size: 15px; }
+    html.content-size-m    { font-size: 16px; }
+    html.content-size-l    { font-size: 18px; }
+    html.content-size-xl   { font-size: 20px; }
+    html.content-size-2xl,
+    html.content-size-xxl  { font-size: 24px; }
+    html.content-size-3xl,
+    html.content-size-xxxl { font-size: 28px; }
+    html.content-size-4xl  { font-size: 32px; }
+    html.content-size-5xl  { font-size: 36px; }
+    html.content-size-6xl  { font-size: 42px; }
+    html.content-size-7xl  { font-size: 48px; }
+    html.content-size-8xl  { font-size: 54px; }
+    html.content-size-9xl  { font-size: 60px; }
+    html.content-size-10xl { font-size: 72px; }
+
+    /* Names used by iA Writer 7 and earlier on iOS */
+    html.content-size-accessibility-m    { font-size: 32px; }
+    html.content-size-accessibility-l    { font-size: 36px; }
+    html.content-size-accessibility-xl   { font-size: 42px; }
+    html.content-size-accessibility-xxl  { font-size: 48px; }
+    html.content-size-accessibility-xxxl { font-size: 54px; }
+
+    /* Keep the minimap legible (iA renders Preview at tiny widths) */
+    img, table, pre { max-width: 100%; }
+}
+
+
+/* =========================================================
+   2. BACKGROUND, NIGHT MODE, TOOLBAR
+   iA Writer matches its Preview toolbar to the <html> colors.
+   ========================================================= */
+html {
+    background-color: var(--color-bg);
+    color: var(--color-text);
+    -webkit-text-size-adjust: 100%;
+}
+
+@media print {
+    html,
+    html.night-mode,
+    body {
+        background: transparent !important;
+        color: var(--black) !important;
+    }
+
+    html {
+        margin: 0;
+        padding: 0;     /* iA sets padding only in Preview; be safe */
+    }
+
+    /* Left and right page margins (see oranburg-variables.css §8) */
+    body[data-document] {
+        margin: 0;
+        padding: 0 var(--page-margin-right) 0 var(--page-margin-left);
+        max-width: none;
+    }
+}
+
+
+/* =========================================================
+   3. PAGE BREAKS  (+++ on its own line)
+   iA emits <div class="page-break" style="page-break-before: always;">
+   ========================================================= */
+.page-break + * {
+    margin-top: 0 !important;
+}
+
+@media screen {
+    .page-break {
+        margin: 2em 0;
+        border-top: 1px dashed var(--color-muted);
+    }
+}
+
+@media print {
+    .page-break {
+        break-before: page;
+        page-break-before: always;
+        height: 0;
+        margin: 0;
+        border: 0;
+    }
+}
+
+
+/* =========================================================
+   4. KEEP HEADINGS WITH THE NEXT LINE
+   WebKit ignores page-break-after: avoid. iA Writer's own
+   templates add invisible height to each heading so that
+   page-break-inside: avoid pushes it to the next page.
+   (iainc/iA-Writer-Templates pull request 41)
+   ========================================================= */
+@media print {
+    h1, h2, h3, h4, h5, h6 {
+        page-break-inside: avoid;
+        break-inside: avoid;
+        page-break-after: avoid;
+        break-after: avoid;
+    }
+
+    h1::after, h2::after, h3::after, h4::after, h5::after {
+        content: "";
+        display: block;
+        height: 60pt;           /* about four lines of 12pt text */
+        margin-bottom: -60pt;
+    }
+
+    img, figure, tr, pre {
+        page-break-inside: avoid;
+        break-inside: avoid;
+    }
+
+    p {
+        orphans: 3;
+        widows: 3;
+    }
+}
+
+
+/* =========================================================
+   5. FOOTNOTES
+   iA Writer 8 emits
+     <sup><a href="#fn1" id="fnr1" title="see footnote" class="footnote">1</a></sup>
+   and collects notes at the end:
+     <div class="footnotes"><hr /><ol><li id="fn1"><p>...
+       <a href="#fnr1" class="reversefootnote">&#8617;</a></p></li>
+   iA Writer footnotes are endnotes; there is no per-page
+   footnote placement in iA Writer's PDF export.
+   ========================================================= */
+a.footnote,
+a.reversefootnote {
+    text-decoration: none;
+    color: inherit;
+}
+
+sup {
+    font-size: 0.75em;
+    line-height: 0;
+    vertical-align: super;
+}
+
+.footnotes p {
+    text-indent: 0 !important;
+}
+
+.footnotes li:target {
+    background-color: var(--color-mark-bg);
+}
+
+a.reversefootnote {
+    font-family: var(--font-ui);
+    font-size: 0.8em;
+    color: var(--color-muted);
+    margin-left: 0.25em;
+}
+
+@media print {
+    a.reversefootnote,
+    .tooltip::after {
+        display: none;
+    }
+
+    .footnotes {
+        page-break-before: avoid;
+    }
+
+    .footnotes li {
+        page-break-inside: avoid;
+        break-inside: avoid;
+    }
+}
+
+
+/* =========================================================
+   6. CITATIONS  ([#CiteKey] with a [#CiteKey]: definition)
+   iA Writer emits
+     <a class="citation" href="#fn2">[<span class="locator">p. 42</span>, 2]
+        <span class="citekey" style="display:none">Key</span></a>
+   and appends <li id="fn2" class="citation"> to the footnotes.
+   House convention: a [#CiteKey] sits inside a footnote.
+   oranburg.js replaces the bracketed number with the full
+   citation text in templates whose <body> carries
+   data-oranburg-citations="inline", and marks the list
+   entry .oranburg-inlined so it is not printed twice.
+   A key with no definition renders as .externalcitation or
+   .notcited; it is flagged on screen so it gets fixed.
+   ========================================================= */
+a.citation {
+    color: inherit;
+    text-decoration: none;
+}
+
+a.citation .cite-text {
+    font-style: inherit;
+}
+
+.footnotes li.citation.oranburg-inlined {
+    display: none;
+}
+
+@media screen {
+    .externalcitation,
+    .notcited {
+        color: var(--color-flag);
+        border-bottom: 1px dashed var(--color-flag);
+        font-family: var(--font-mono);
+        font-size: 0.85em;
+    }
+}
+
+
+/* =========================================================
+   7. TABLE OF CONTENTS  ({{TOC}} → <div class="TOC">)
+   Class names are case sensitive: it is .TOC, not .toc.
+   ========================================================= */
+.TOC ul {
+    list-style: none;
+    padding-left: 1.5em;
+    margin: 0;
+}
+
+.TOC > ul {
+    padding-left: 0;
+}
+
+.TOC a {
+    color: inherit;
+    text-decoration: none;
+}
+
+/* The document title is not a section; iA lists it first */
+.TOC a.toc-doc-title {
+    display: none;
+}
+
+.TOC li:has(> a.toc-doc-title) > ul {
+    padding-left: 0;
+}
+
+.TOC a[data-outline]::before {
+    content: attr(data-outline) " ";
+}
+
+@media print {
+    .TOC a {
+        text-decoration: none;
+    }
+}
+
+
+/* =========================================================
+   8. HIGHLIGHTS, MATH, TASKS, HASHTAGS, WIKILINKS
+   ========================================================= */
+mark {
+    background-color: var(--color-mark-bg);
+    color: inherit;
+    padding: 0 0.1em;
+}
+
+.math[data-display-math="true"] {
+    display: block;
+    text-align: center;
+    margin: 0.75em 0;
+}
+
+.task-list-item {
+    list-style: none;
+}
+
+.task-list-item-checkbox {
+    margin: 0 0.4em 0 -1.4em;
+    vertical-align: middle;
+}
+
+.hashtag,
+.wikilink {
+    color: var(--color-link);
+}
+
+@media print {
+    .hashtag,
+    .wikilink {
+        color: inherit;
+    }
+}
+
+
+/* =========================================================
+   9. CONTENT BLOCKS, FIGURES, TABLES
+   Content blocks (/image.png, /data.csv, /section.md) arrive
+   as <figure>, <table> or plain Markdown HTML.
+   ========================================================= */
+img {
+    max-width: 100%;
+    height: auto;
+}
+
+figure {
+    margin: 1em 0;
+    text-indent: 0;
+}
+
+figure img {
+    display: block;
+    margin: 0 auto;
+}
+
+figcaption,
+caption {
+    font-size: 0.9em;
+    font-style: italic;
+    color: var(--color-muted);
+    text-indent: 0;
+}
+
+figcaption {
+    text-align: center;
+    margin-top: 0.4em;
+}
+
+caption {
+    caption-side: bottom;
+    text-align: left;
+    padding-top: 0.4em;
+}
+
+table {
+    font-variant-numeric: tabular-nums;
+}
+
+td p,
+th p {
+    text-indent: 0;
+    margin: 0;
+}
+
+
+/* =========================================================
+   10. HEBREW AND OTHER RIGHT-TO-LEFT TEXT
+   Conventions/hebrew-sources.md relies on Unicode bidi to set
+   direction: a paragraph, list item, heading or cell whose
+   first strong character is Hebrew runs right to left; an
+   English paragraph with an inline Hebrew word stays left to
+   right. The Hebrew glyphs come from the fallback faces in
+   oranburg-variables.css §0.
+   ========================================================= */
+p, li, dt, dd, blockquote, figcaption, caption, td, th,
+h1, h2, h3, h4, h5, h6 {
+    unicode-bidi: plaintext;
+}
+
+/* An explicit <div dir="rtl"> or <p dir="rtl"> in the Markdown wins */
+[dir="rtl"] {
+    unicode-bidi: isolate;
+    text-align: right;
+}
+
+
+/* =========================================================
+   11. RUNNING HEAD AND FOOTER PAGES
+   header.html and footer.html are separate pages that iA
+   Writer draws inside the IATemplateHeaderHeight and
+   IATemplateFooterHeight bands at the full paper width.
+   iA Writer overwrites the class attribute of <html>, so the
+   pages are identified by id, as iA's own title page is.
+   ========================================================= */
+html#page-header,
+html#page-footer,
+html#page-header body,
+html#page-footer body {
+    height: 100%;
+    margin: 0;
+    background: transparent !important;
+}
+
+html#page-header body,
+html#page-footer body {
+    max-width: none;
+    width: auto;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    padding: 0 var(--page-margin-right) 0 var(--page-margin-left);
+    overflow: hidden;
+}
+
+html#page-header body {
+    justify-content: flex-end;
+    padding-bottom: var(--header-gap);
+}
+
+html#page-footer body {
+    justify-content: flex-start;
+    padding-top: var(--footer-gap);
+}
+
+.header-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 1em;
+    font-family: var(--font-heading);
+    font-size: 9pt;
+    line-height: 1.2;
+    color: var(--color-muted);
+    padding: 0 0 3pt 0;
+    white-space: nowrap;
+}
+
+.header-left {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-variant: small-caps;
+    letter-spacing: 0.03em;
+}
+
+.header-right {
+    text-align: right;
+    flex-shrink: 0;
+}
+
+.footer-container {
+    text-align: center;
+    font-family: var(--font-heading);
+    font-size: 8pt;
+    line-height: 1.2;
+    color: var(--color-muted);
+    letter-spacing: 0.05em;
+}
+
+
+/* =========================================================
+   12. TITLE PAGE  (title.html; print and PDF only)
+   ========================================================= */
+html#title-page,
+html#title-page body {
+    height: 100%;
+    margin: 0;
+}
+
+html#title-page body {
+    max-width: none;
+    width: auto;
+    box-sizing: border-box;
+    padding: 1in var(--page-margin-right) 1in var(--page-margin-left);
+}
+
+
+/* =========================================================
+   13. LAW OF THE FIRM BOXES
+   docs/writing/document-types/lotf-casebook.md: an H4 that
+   starts with 📜, 💡 or 📄, followed by one blockquote.
+   oranburg.js adds the box-* classes. Fills are the colors
+   the convention names; they print (Aspen reads them).
+   ========================================================= */
+h4.box-title {
+    counter-increment: none !important;   /* not part of a numbered outline */
+    margin-bottom: 0 !important;
+    padding: 0.4em 0.75em 0.2em;
+    border-radius: 3px 3px 0 0;
+    color: var(--black) !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+}
+
+h4.box-title::before {
+    content: none !important;
+}
+
+blockquote.box-body {
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    margin-top: 0 !important;
+    padding: 0.2em 0.75em 0.6em !important;
+    border: 0 !important;
+    border-radius: 0 0 3px 3px;
+    color: var(--black) !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+}
+
+blockquote.box-body a {
+    color: inherit;
+}
+
+.box-source    { background-color: var(--blue-light) !important; }
+.box-insight   { background-color: var(--yellow) !important; }
+.box-transaction { background-color: var(--teal) !important; }
+
+blockquote.box-source {
+    font-size: 0.8333em;    /* 10pt at 12pt body */
+}
+
+blockquote.box-transaction {
+    font-family: var(--font-typewriter);
+}
