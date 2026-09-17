@@ -233,26 +233,46 @@
 
 
 /* =========================================================
-   7. HEADING HIERARCHY (Oranburg Style D-015)
-   H1: Oswald Bold 16pt      — chapter/document titles
-   H2: Oswald SemiBold 14pt  — major sections
-   H3: Oswald Regular 12pt   — subsections
-   H4: Roboto Medium 12pt    — minor subdivisions
+   7. HEADING HIERARCHY (Oranburg Style D-015, amended 2026-09-17)
+   H1: Oswald Bold 16pt          chapter and document titles
+   H2: Oswald SemiBold 14pt      major sections
+   H3: Oswald Regular 12pt       subsections
+   H4: Crimson Text SemiBold 12pt   minor subdivisions
+   H5: Crimson Text Italic 12pt     below that
+   H6: Crimson Text Regular 11pt    lowest
+
+   Two families carry the ladder: Oswald for the three display
+   levels and Crimson Text below them. D-015 as published gives
+   H4 to Roboto Medium, which put three families in one heading
+   ladder; Seth ruled on 2026-09-17 that he had not intended
+   the mix. Roboto stays the UI face and now appears only in
+   screen chrome, the reverse-footnote link and the Preview
+   warning. The published D-015 table needs the same edit.
+
    Expressed in em so screen scales; equal to the pt values
    at the 12pt print body.
    ========================================================= */
 :root {
-    --print-h1-size:    1.3333em;   /* 16pt */
+    --print-h1-size:    1.1667em;   /* 14pt */
     --print-h1-weight:  700;
 
-    --print-h2-size:    1.1667em;   /* 14pt */
-    --print-h2-weight:  600;
+    --print-h2-size:    1.0833em;   /* 13pt */
+    --print-h2-weight:  700;
 
     --print-h3-size:    1em;        /* 12pt */
-    --print-h3-weight:  400;
+    --print-h3-weight:  700;
 
     --print-h4-size:    1em;        /* 12pt */
-    --print-h4-weight:  500;
+    --print-h4-weight:  700;
+
+    /* Space above each level. Halved from the old 2/1.75/1.5/1.25em,
+       which cost about 1.5 pages of a 7-page teaching sheet. */
+    --space-h1:         1.40em;
+    --space-h2:         1.00em;
+    --space-h3:         0.70em;
+    --space-h4:         0.60em;
+    --space-h5:         0.50em;
+    --space-h6:         0.50em;
 }
 
 

@@ -1,0 +1,314 @@
+/* =========================================================
+   ORANBURG TEACHING NOTES
+   Seth C. Oranburg — Oranburg Style
+
+   Class prep sheets, printed and taught from. This is the
+   most-printed document in the library and until now it had no
+   template: a 2,585-word sheet set in 7 pages through Draft,
+   about 1.5 pages of which was inter-block whitespace.
+
+   Four things make it shorter, in order of how much they save:
+
+   1. Heading margins halved (oranburg-variables.css section 7),
+      and halved again here. A prep sheet runs 17 or 18 headings
+      in 5 pages, so heading air was the largest single cost.
+   2. H3 is a sidehead, run into the text beside it. A sheet's
+      H3 level is a run of statutory sections, each introducing
+      three to six quoted lines, and each was costing a full
+      line of its own plus its leading.
+   3. Blockquotes take a left indent only. A symmetric 0.5in
+      indent cost an inch of measure, which turned three quoted
+      lines into five.
+   4. Header and footer bands cut from 72pt to 40pt, recovering
+      nearly an inch of every sheet.
+
+   THE LEFT MARGIN IS AN ANNOTATION GUTTER, NOT A SYMMETRY.
+   1.3in left against 0.7in right, because Seth is left-handed
+   and writes down the side of the sheet. This follows
+   LawOS/lawos/emit/classpack.py, whose own test asserts that
+   the left margin must remain the widest on the page. Do not
+   "fix" the asymmetry.
+
+   Paper: US Letter, because that is what the department's
+   printers hold. Choose it in File > Page Setup.
+   ========================================================= */
+
+@import url("oranburg-variables.css");
+@import url("oranburg-common.css");
+
+
+/* =========================================================
+   1. PAGE
+   ========================================================= */
+@page {
+    size: letter;
+}
+
+:root {
+    --page-margin-left:  1.3in;    /* the annotation gutter */
+    --page-margin-right: 0.7in;
+
+    /* Tighter than the article templates. A prep sheet is read
+       standing up, at arm's length, and then written on. */
+    --space-h1: 0.90em;
+    --space-h2: 0.65em;
+    --space-h3: 0.45em;
+    --space-h4: 0.40em;
+    --space-h5: 0.35em;
+    --space-h6: 0.35em;
+
+    --header-gap: 10pt;
+    --footer-gap: 8pt;
+}
+
+body {
+    font-family: var(--font-body);
+    font-size: 11pt;
+    line-height: 1.1;
+    color: var(--color-text);
+    margin: 0;
+    padding: 0;
+    word-wrap: break-word;
+    -webkit-font-kerning: normal;
+    font-kerning: normal;
+}
+
+@media screen {
+    body {
+        max-width: 44em;
+        margin: 0 auto;
+        padding: 0 2em;
+        font-size: 1rem;
+        line-height: 1.5;
+    }
+}
+
+body > :first-child { margin-top: 0; padding-top: 0; }
+
+
+/* =========================================================
+   2. HEADINGS
+   The ladder is oranburg-common.css section 15: one family,
+   six levels, told apart by size, weight and style. This file
+   changes only spacing, color, and the H3 sidehead.
+   ========================================================= */
+h1 {
+    color: var(--color-h1);
+    border-bottom: 0.5pt solid var(--color-rule);
+    padding-bottom: 0.15em;
+}
+
+h2 {
+    color: var(--color-h2);
+}
+
+h3 {
+    color: var(--color-h3);
+}
+
+h4, h5 { color: var(--color-h4); }
+h6 { color: var(--color-muted); }
+
+/* --- The sidehead.
+   In print an H3 and the paragraph or quotation after it share a
+   line: "§ 36 — Methods of Termination   Any offer may be..."
+   A run of ten statutory sections then costs ten lines instead
+   of twenty-five. On screen they stay stacked, because Preview
+   is for editing and the run-in is harder to scan there. */
+@media print {
+    h3 {
+        float: left;
+        margin: 0.45em 0.5em 0 0;
+        max-width: 42%;
+        font-style: normal;
+    }
+
+    h3 + p,
+    h3 + blockquote,
+    h3 + ul,
+    h3 + ol {
+        overflow: hidden;      /* sit beside the float, not under it */
+    }
+
+    h3 + blockquote {
+        margin-top: 0.45em;
+    }
+
+    /* A float cannot straddle a page break cleanly, so keep the
+       sidehead with what follows it. */
+    h3 { page-break-inside: avoid; break-inside: avoid; }
+}
+
+
+/* =========================================================
+   3. PARAGRAPHS
+   No space between paragraphs, no first-line indent. A prep
+   sheet's paragraphs are short (median 21 words) and are read
+   as separate facts, so an indent would be noise and a blank
+   line would be a page.
+   ========================================================= */
+p {
+    margin: 0 0 0.25em 0;
+    text-indent: 0;
+    orphans: 2;
+    widows: 2;
+}
+
+@media screen {
+    p { margin-bottom: 0.7em; }
+}
+
+
+/* =========================================================
+   4. QUOTED STATUTE AND CASE
+   The heaviest block on the page: a sheet runs 13 quote blocks
+   holding 31 lines. Left indent only, and adjacent quotes close
+   up so a section quoted in subsections reads as one block.
+   ========================================================= */
+blockquote {
+    margin: 0.3em 0 0.3em 0.25in;
+    padding: 0;
+    border: 0;
+    text-indent: 0;
+    font-size: 0.955em;     /* 10.5pt at an 11pt body */
+    line-height: 1.12;
+}
+
+blockquote p { margin-bottom: 0.15em; text-indent: 0; }
+blockquote p:last-child { margin-bottom: 0; }
+
+blockquote + blockquote { margin-top: 0.15em; }
+
+@media screen {
+    blockquote {
+        border-left: 3px solid var(--color-rule);
+        padding-left: 1em;
+        margin-left: 0;
+        font-size: inherit;
+        line-height: 1.45;
+    }
+}
+
+@media print {
+    blockquote { page-break-inside: avoid; break-inside: avoid; }
+}
+
+
+/* =========================================================
+   5. LISTS
+   26 one-line items per sheet, so the leading between them is
+   worth more than it looks.
+   ========================================================= */
+ul, ol {
+    margin: 0.3em 0;
+    padding-left: 1.35em;
+}
+
+li { margin-bottom: 0.1em; }
+li p { margin: 0; text-indent: 0; }
+li > ul, li > ol { margin: 0.1em 0; }
+
+@media screen {
+    li { margin-bottom: 0.25em; }
+}
+
+
+/* =========================================================
+   6. TABLES
+   386 files use them and teaching material is the heaviest
+   user. Rules above and below the header and under the last
+   row; nothing vertical.
+   ========================================================= */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.955em;
+    margin: 0.45em 0;
+}
+
+th, td {
+    padding: 0.15em 0.45em;
+    vertical-align: top;
+    text-align: left;
+    border: 0;
+}
+
+thead th {
+    font-weight: 700;
+    border-top: 1pt solid currentColor;
+    border-bottom: 0.5pt solid currentColor;
+}
+
+tbody tr:last-child td { border-bottom: 1pt solid currentColor; }
+
+td { font-variant-numeric: tabular-nums; }
+
+
+/* =========================================================
+   7. LINKS, CODE, RULES
+   ========================================================= */
+a { color: var(--color-link); text-decoration: underline; }
+@media print { a { color: inherit; text-decoration: none; } }
+
+code, pre, kbd {
+    font-family: var(--font-mono);
+    font-size: 0.88em;
+    background-color: var(--color-code-bg);
+    border-radius: 2px;
+}
+code { padding: 0.1em 0.25em; }
+pre { padding: 0.5em 0.7em; margin: 0.4em 0; white-space: pre-wrap; }
+pre code { padding: 0; background: none; }
+
+hr {
+    border: 0;
+    border-top: 0.5pt solid var(--color-rule);
+    width: 30%;
+    margin: 0.7em 0;
+}
+
+
+/* =========================================================
+   8. NOTES
+   A prep sheet carries no footnotes today. Specified anyway,
+   compactly, so one does not reformat the sheet.
+   ========================================================= */
+.footnotes {
+    font-size: 0.86em;
+    line-height: 1.15;
+    margin-top: 0.8em;
+}
+
+.footnotes ol { margin: 0; padding-left: 1.8em; }
+.footnotes li { margin-bottom: 0.2em; }
+.footnotes p { margin: 0; }
+
+.footnotes hr {
+    width: 33%;
+    margin: 0.8em 0 0.4em;
+}
+
+
+/* =========================================================
+   9. HEADER AND FOOTER
+   Layout is in oranburg-common.css section 11. Both bands are
+   40pt here rather than 72pt.
+   ========================================================= */
+.header-container {
+    font-family: var(--font-heading);
+    font-size: 8.5pt;
+    border-bottom: 0.5pt solid var(--color-rule);
+    padding-bottom: 2pt;
+}
+
+.header-left {
+    font-variant: normal;
+    letter-spacing: 0.02em;
+    text-transform: none;
+}
+
+.footer-container {
+    font-family: var(--font-heading);
+    font-size: 8.5pt;
+    letter-spacing: normal;
+}

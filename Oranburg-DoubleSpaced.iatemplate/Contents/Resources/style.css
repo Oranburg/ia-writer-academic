@@ -64,28 +64,12 @@ body > :first-child { margin-top: 0; padding-top: 0; }
 /* =========================================================
    2. HEADINGS
    ========================================================= */
-h1, h2, h3, h4, h5, h6 {
-    font-family: var(--font-heading);
-    line-height: 1.25;
-    margin-bottom: 0.4em;
-    text-indent: 0;
-}
-
-body > h1:first-of-type {
-    font-size: 2em;
-    font-weight: 700;
-    text-align: center;
-    color: var(--color-title);
-    margin-top: 0.75em;
-    margin-bottom: 0.5em;
-}
-
-h1 { font-size: 1.5em; font-weight: 700; color: var(--color-h1); margin-top: 2em; }
-h2 { font-size: 1.25em; font-weight: 600; color: var(--color-h2); margin-top: 1.75em; }
-h3 { font-size: 1.1em; font-weight: 400; color: var(--color-h3); margin-top: 1.5em; }
-h4 { font-size: 1em; font-weight: 700; color: var(--color-h4); margin-top: 1.25em; }
-/* Body serif: Oswald has a weight axis and no drawn italic */
-h5 { font-family: var(--font-body); font-size: 1em; font-weight: 400; font-style: italic; color: var(--color-h4); margin-top: 1em; }
+/* The ladder is in oranburg-common.css section 15. */
+h1 { color: var(--color-h1); }
+h2 { color: var(--color-h2); }
+h3 { color: var(--color-h3); }
+h4, h5 { color: var(--color-h4); }
+h6 { color: var(--color-muted); }
 
 /* Print: all headings in TNR, black, bold */
 @media print {
@@ -133,7 +117,7 @@ li p { text-indent: 0; }
    4. BLOCKQUOTES, LINKS, LISTS, TABLES, CODE
    ========================================================= */
 blockquote {
-    margin: 0.75em var(--indent-block);
+    margin: 0.5em 0 0.5em var(--indent-block);
     text-indent: 0;
     font-style: normal;
 }

@@ -95,7 +95,7 @@ li p { text-indent: 0; }
    4. BLUEBOOK BLOCK QUOTATIONS (Rule 5.1)
    ========================================================= */
 blockquote {
-    margin: 0.75em var(--indent-block);
+    margin: 0.5em 0 0.5em var(--indent-block);
     text-indent: 0;
     font-size: var(--font-size-block);
     line-height: 1.2;
@@ -128,21 +128,29 @@ blockquote p { text-indent: 0; margin-bottom: 0.5em; }
    ##### (H5) a, b, c       Body font, indented
    ========================================================= */
 
-h1, h2, h3, h4, h5 {
-    font-family: var(--font-heading);
+/* One family for every level; see oranburg-common.css section 15.
+   Law Review keeps its own sizes because the Bluebook outline needs
+   five levels told apart, and its own margins because an article
+   can afford more air than a teaching sheet. */
+h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-body);
     text-indent: 0;
     line-height: 1.25;
-    margin-bottom: 0.4em;
 }
 
 /* --- H1: Roman Numeral Parts --- */
 h1 {
     font-size: var(--print-h1-size);
-    font-weight: var(--print-h1-weight);
-    font-variant: small-caps;
+    font-weight: 700;
+    /* Crimson Text draws no small caps, so WebKit would fake them and
+       thin the strokes. Letterspaced capitals at 92% instead, which is
+       what a book does when small caps are unavailable.
+       docs/TYPOGRAPHY-SPEC.md section 4.3. */
+    text-transform: uppercase;
+    font-size: 1.0733em;
     text-align: left;
-    letter-spacing: 0.03em;
-    margin-top: 2em;
+    letter-spacing: 0.055em;
+    margin-top: var(--space-h1);
     color: var(--color-h1);
     counter-increment: h1c;
     counter-reset: h2c 0 h3c 0 h4c 0 h5c 0;
@@ -185,7 +193,7 @@ h2 {
     font-weight: var(--print-h2-weight);
     font-variant: normal;
     text-align: left;
-    margin-top: 1.75em;
+    margin-top: var(--space-h2);
     color: var(--color-h2);
     counter-increment: h2c;
     counter-reset: h3c 0 h4c 0 h5c 0;
@@ -207,7 +215,9 @@ h2[id="introduction" i],
 h2[id="conclusion" i],
 h2[id^="acknowledg" i] {
     text-align: center;
-    font-variant: small-caps;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-size: 1em;
     counter-increment: none;
 }
 
@@ -260,7 +270,7 @@ h3 {
     font-weight: bold;
     font-style: italic;
     text-align: left;
-    margin-top: 1.5em;
+    margin-top: var(--space-h3);
     color: var(--color-h3);
     counter-increment: h3c;
     counter-reset: h4c 0 h5c 0;
@@ -277,7 +287,7 @@ h4 {
     font-weight: normal;
     font-style: italic;
     text-align: left;
-    margin-top: 1.25em;
+    margin-top: var(--space-h4);
     color: var(--color-h4);
     counter-increment: h4c;
     counter-reset: h5c 0;
@@ -295,7 +305,7 @@ h5 {
     font-style: normal;
     text-align: left;
     padding-left: 0.25in;
-    margin-top: 1em;
+    margin-top: var(--space-h5);
     color: var(--color-h4);
     counter-increment: h5c;
 }

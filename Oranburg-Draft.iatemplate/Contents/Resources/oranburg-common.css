@@ -694,3 +694,50 @@ blockquote.box-transaction {
         display: none;
     }
 }
+
+
+
+/* =========================================================
+   15. THE HEADING LADDER, H1 THROUGH H6
+   docs/TYPOGRAPHY-SPEC.md section 4.
+
+   ONE FAMILY sets every level. Levels are told apart by size,
+   weight, style, case, alignment and indent, never by changing
+   family. Templates may override size and space; a template
+   that changes font-family here is a bug.
+
+   Oswald is kept for the running head and footer alone, where a
+   condensed face earns its place fitting a title and a page
+   number on one line.
+   ========================================================= */
+h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-body);
+    line-height: 1.25;
+    text-indent: 0;
+    -webkit-hyphens: none;
+    hyphens: none;
+}
+
+h1 { font-size: var(--print-h1-size); font-weight: 700; margin: var(--space-h1) 0 0.30em; }
+h2 { font-size: var(--print-h2-size); font-weight: 700; margin: var(--space-h2) 0 0.25em; }
+h3 { font-size: var(--print-h3-size); font-weight: 700; margin: var(--space-h3) 0 0.20em; }
+h4 { font-size: 1em; font-weight: 700; font-style: italic; margin: var(--space-h4) 0 0.15em; }
+h5 { font-size: 1em; font-weight: 400; font-style: italic; margin: var(--space-h5) 0 0.15em; }
+h6 { font-size: 1em; font-weight: 400; font-style: italic; margin: var(--space-h6) 0 0.15em;
+     padding-left: 0.25in; color: var(--color-muted); }
+
+/* The document title: the first H1, only when it is neither
+   numbered nor a structural name. oranburg.js decides and adds
+   the class; three heading conventions coexist in the library and
+   "# I." is a Part in one of them. */
+h1.doc-title {
+    font-size: 1.5em;
+    text-align: center;
+    letter-spacing: 0.04em;
+    margin-top: 0.5em;
+    margin-bottom: 0.6em;
+}
+
+@media print {
+    h1.doc-title { margin-top: 0; }
+}
