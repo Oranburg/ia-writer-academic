@@ -1,10 +1,11 @@
 /* =========================================================
-   ORANBURG SUBMISSION TEMPLATE
+   ORANBURG DOUBLE-SPACED TEMPLATE
    Seth C. Oranburg — Oranburg Style
 
-   Law review submission. Hard journal override for PDF:
-   Times New Roman 12pt, double-spaced, 1in margins.
-   Screen: normal Oranburg color headings for comfortable editing.
+   The reading and markup copy. Times New Roman 12pt,
+   double-spaced, 1in margins, so a reader has room to write
+   between the lines, and so a journal that asks for double
+   spacing gets it. Screen: normal Oranburg color headings.
 
    Top and bottom margins: IATemplateHeaderHeight and
    IATemplateFooterHeight (72pt = 1in) in Info.plist.
@@ -46,7 +47,7 @@ body {
     }
 }
 
-/* SUBMISSION OVERRIDE: TNR double-spaced for print */
+/* THE OVERRIDE: TNR double-spaced for print */
 @media print {
     body {
         font-family: var(--font-submission) !important;
@@ -83,7 +84,8 @@ h1 { font-size: 1.5em; font-weight: 700; color: var(--color-h1); margin-top: 2em
 h2 { font-size: 1.25em; font-weight: 600; color: var(--color-h2); margin-top: 1.75em; }
 h3 { font-size: 1.1em; font-weight: 400; color: var(--color-h3); margin-top: 1.5em; }
 h4 { font-size: 1em; font-weight: 700; color: var(--color-h4); margin-top: 1.25em; }
-h5 { font-size: 1em; font-weight: 400; font-style: italic; color: var(--color-h4); margin-top: 1em; }
+/* Body serif: Oswald has a weight axis and no drawn italic */
+h5 { font-family: var(--font-body); font-size: 1em; font-weight: 400; font-style: italic; color: var(--color-h4); margin-top: 1em; }
 
 /* Print: all headings in TNR, black, bold */
 @media print {

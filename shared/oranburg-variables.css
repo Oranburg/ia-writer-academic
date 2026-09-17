@@ -15,38 +15,77 @@
 
 
 /* =========================================================
-   0. HEBREW FALLBACK FACES
+   0. HEBREW AND ARAMAIC FALLBACK FACES
    Crimson Text, Oswald and Roboto have no Hebrew glyphs.
    These faces cover only the Hebrew blocks (unicode-range),
    so Latin text still uses the brand fonts and Hebrew text,
-   including nikud and cantillation, uses the first installed
-   face that has it. SBL Hebrew and Taamey Frank are optional
-   installs; New Peninim MT, Times New Roman and Arial Hebrew
-   ship with macOS.
+   with its nikud and ta'amei ha-miqra, uses the first
+   installed face that draws them.
+
+   Order of preference, and why. The first three place nikud
+   and cantillation correctly and are the only faces that do
+   so reliably; the next three place nikud well and ta'amim
+   poorly; the last two are macOS system faces and are the
+   floor. Conventions/hebrew-sources.md keeps ta'amim for
+   Tanakh on request and strips them by default, so nikud
+   placement is what decides most pages.
+
+     SBL Hebrew        free from sbl-site.org, manual install
+     Ezra SIL          brew install --cask font-ezra-sil
+     Taamey Frank CLM  Culmus project, manual install
+     Frank Ruhl Libre  brew install --cask font-frank-ruhl-libre
+     David Libre       brew install --cask font-david-libre
+     Noto Serif Hebrew brew install --cask font-noto-serif-hebrew
+     New Peninim MT    ships with macOS
+     Times New Roman   ships with macOS
+
+   Installing any one of the first three is the single
+   largest improvement available to a Hebrew page.
    ========================================================= */
 @font-face {
     font-family: "Oranburg Hebrew Serif";
     src: local("SBL Hebrew"), local("SBLHebrew"),
+         local("Ezra SIL"), local("EzraSIL"),
+         local("Ezra SIL SR"),
          local("Taamey Frank CLM"), local("TaameyFrankCLM-Medium"),
+         local("Frank Ruhl Libre"), local("FrankRuhlLibre-Regular"),
+         local("David Libre"), local("DavidLibre-Regular"),
+         local("Noto Serif Hebrew"), local("NotoSerifHebrew-Regular"),
          local("New Peninim MT"), local("NewPeninimMT"),
          local("Times New Roman"), local("TimesNewRomanPSMT");
-    unicode-range: U+0590-05FF, U+FB1D-FB4F;
+    unicode-range: U+0590-05FF, U+FB1D-FB4F, U+200F, U+2135-2138;
 }
 
 @font-face {
     font-family: "Oranburg Hebrew Serif";
     font-weight: 700;
     src: local("SBL Hebrew"), local("SBLHebrew"),
+         local("Ezra SIL B"), local("EzraSILB"),
+         local("Frank Ruhl Libre Bold"), local("FrankRuhlLibre-Bold"),
+         local("David Libre Bold"), local("DavidLibre-Bold"),
+         local("Noto Serif Hebrew Bold"), local("NotoSerifHebrew-Bold"),
          local("New Peninim MT Bold"), local("NewPeninimMT-Bold"),
          local("Times New Roman Bold"), local("TimesNewRomanPS-BoldMT");
-    unicode-range: U+0590-05FF, U+FB1D-FB4F;
+    unicode-range: U+0590-05FF, U+FB1D-FB4F, U+200F, U+2135-2138;
 }
 
 @font-face {
     font-family: "Oranburg Hebrew Sans";
     src: local("Arial Hebrew"), local("ArialHebrew"),
+         local("Noto Sans Hebrew"), local("NotoSansHebrew-Regular"),
+         local("Heebo"), local("Heebo-Regular"),
          local("SBL Hebrew"), local("Times New Roman");
-    unicode-range: U+0590-05FF, U+FB1D-FB4F;
+    unicode-range: U+0590-05FF, U+FB1D-FB4F, U+200F, U+2135-2138;
+}
+
+@font-face {
+    font-family: "Oranburg Hebrew Sans";
+    font-weight: 700;
+    src: local("Arial Hebrew Bold"), local("ArialHebrew-Bold"),
+         local("Noto Sans Hebrew Bold"), local("NotoSansHebrew-Bold"),
+         local("Heebo Bold"), local("Heebo-Bold"),
+         local("Times New Roman Bold");
+    unicode-range: U+0590-05FF, U+FB1D-FB4F, U+200F, U+2135-2138;
 }
 
 
@@ -174,8 +213,15 @@
 :root {
     --line-height-body:     1.15;
     --line-height-screen:   1.6;        /* More generous for on-screen reading */
-    --line-height-double:   2.0;        /* Law review submission */
+    --line-height-double:   2.0;        /* Double-spaced reading copy */
     --line-height-footnote: 1.2;
+
+    /* Hebrew carrying nikud, and more so ta'amim, needs leading
+       that Latin text at 1.15 does not. Applied by
+       oranburg-common.css to any block whose first strong
+       character is Hebrew. */
+    --line-height-hebrew:       1.7;
+    --line-height-hebrew-print: 1.5;
 
     --font-size-body:       12pt;       /* print only; screen uses 1rem */
     --font-size-footnote:   0.8333em;   /* 10pt at 12pt body */

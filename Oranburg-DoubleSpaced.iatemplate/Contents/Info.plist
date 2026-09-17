@@ -9,9 +9,9 @@
 	<key>CFBundlePackageType</key>
 	<string>BNDL</string>
 	<key>CFBundleName</key>
-	<string>Oranburg Submission</string>
+	<string>Oranburg Double-Spaced</string>
 	<key>CFBundleIdentifier</key>
-	<string>io.github.oranburg.submission</string>
+	<string>io.github.oranburg.double-spaced</string>
 	<key>CFBundleShortVersionString</key>
 	<string>2.0.0</string>
 	<key>CFBundleVersion</key>
@@ -29,7 +29,7 @@
 	<key>IATemplateSupportsDiffHTML</key>
 	<false/>
 	<key>IATemplateDescription</key>
-	<string>Law review submission format. Times New Roman 12pt, double-spaced for PDF. Color headings on screen. Meets standard journal requirements.</string>
+	<string>Double-spaced reading and markup copy. Times New Roman 12pt, double-spaced for PDF, wide leading so a reader can write between the lines. Use it for journals that ask for double spacing and for anyone marking up a draft. Color headings on screen.</string>
 	<key>IATemplateAuthor</key>
 	<string>Seth C. Oranburg</string>
 	<key>IATemplateAuthorURL</key>

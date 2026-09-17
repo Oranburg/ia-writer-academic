@@ -8,6 +8,15 @@
 # the SDK is not supported by the compiler, point SDKROOT at an older SDK:
 #   SDKROOT=/Library/Developer/CommandLineTools/SDKs/MacOSX26.sdk tools/render_test.sh
 set -eu
+
+# swiftc refuses an SDK newer than itself. Prefer a matching SDK when the
+# default one is too new, which is the usual state after a macOS update.
+if [ -z "${SDKROOT:-}" ]; then
+    for sdk in /Library/Developer/CommandLineTools/SDKs/MacOSX26.sdk \
+               /Library/Developer/CommandLineTools/SDKs/MacOSX15.sdk; do
+        [ -d "$sdk" ] && SDKROOT="$sdk" && export SDKROOT && break
+    done
+fi
 ROOT=$(cd "$(dirname "$0")/.." && pwd)
 MD=${1:-"$ROOT/tests/fixtures/sample.md"}
 OUT=${OUT:-$(mktemp -d "${TMPDIR:-/tmp}/oranburg-render.XXXXXX")}

@@ -1,19 +1,28 @@
 /* =========================================================
    ORANBURG US TRADE (6x9) — Monographs
-   Margins per Lulu specs for 151-400 pages.
+   Margins follow Lulu's perfect-bound specification. Check
+   them against Lulu's current table for the page count of the
+   actual book before a print run; the gutter Lulu asks for
+   grows with the page count.
 
-   Trim 6in x 9in.
-   Top 0.625in    = IATemplateHeaderHeight 45pt (Info.plist)
-   Bottom 0.75in = IATemplateFooterHeight 54pt (Info.plist)
-   Inside (gutter) 1.0in, applied on the left
-   Outside 0.625in, applied on the right
+   Trim 6in x 9in
+   Top 0.625in      = IATemplateHeaderHeight 45pt (Info.plist)
+   Bottom 0.75in  = IATemplateFooterHeight 54pt (Info.plist)
+   Inside (spine) 1.0in
+   Outside 0.625in
 
    iA Writer takes the paper size from File > Page Setup, not
-   from CSS. Create a custom paper size of 6in x 9in with
-   zero margins and choose it before exporting. The @page
-   size below is ignored by WebKit and honored by Chromium-based
-   renderers (for example a pandoc or headless-Chrome PDF).
-   WebKit cannot mirror margins on verso pages.
+   from CSS. Create a custom paper size of 6in x 9in with zero
+   margins and choose it before exporting. The @page size
+   below is ignored by WebKit and honored by Chromium-based
+   renderers (a pandoc or headless-Chrome PDF, for example).
+
+   THE EXPORT IS NOT THE BOOK. WebKit cannot tell a recto page
+   from a verso one, so this template prints a symmetric
+   0.8125in margin on both sides and tools/impose.swift then
+   shifts each page 13.5pt toward its spine. Exporting and
+   sending the PDF straight to Lulu puts the gutter on the
+   wrong side of every even page.
    ========================================================= */
 
 @import url("oranburg-book-base.css");
@@ -22,7 +31,13 @@
     size: 6in 9in;
 }
 
+/* Symmetric margins, each one half of inside plus outside. The
+   exported PDF is centered and is not yet a book interior; running
+   tools/impose.swift over it moves every recto page 13.5pt
+   right and every verso page the same distance left, which lands the
+   inside margin at 1.0in and the outside at 0.625in on the correct
+   side of each page. See the Books section of README.md. */
 :root {
-    --page-margin-left:  1.0in;   /* inside (gutter) */
-    --page-margin-right: 0.625in;   /* outside */
+    --page-margin-left:  0.8125in;
+    --page-margin-right: 0.8125in;
 }

@@ -214,6 +214,12 @@ h2[id^="acknowledg" i] {
 h1.unnumbered { counter-reset: h2c 0 h3c 0 h4c 0 h5c 0; }
 h2.unnumbered { counter-reset: h3c 0 h4c 0 h5c 0; }
 
+/* Structural headings keep their own spacing and do not open a
+   page. An Abstract, an Introduction and a Conclusion belong in
+   the flow of an article manuscript; only the Contents ends a
+   page, which section 6 does with break-after. Forcing a break
+   before each of these cost four near-empty pages in a seven
+   page render. */
 @media print {
     h1.unnumbered,
     h2.unnumbered,
@@ -222,9 +228,13 @@ h2.unnumbered { counter-reset: h3c 0 h4c 0 h5c 0; }
     h2[id="introduction" i],
     h2[id="conclusion" i],
     h2[id^="acknowledg" i] {
+        margin-top: 1.75em;
+    }
+
+    /* The first thing in the file needs no leading space */
+    body > :first-child.unnumbered,
+    body > h1:first-of-type + p + .unnumbered {
         margin-top: 0;
-        page-break-before: always;
-        break-before: page;
     }
 }
 
@@ -239,9 +249,14 @@ h2[id^="acknowledg" i]::before,
     content: "" !important;
 }
 
-/* --- H3: Decimal Subsections --- */
+/* --- H3: Decimal Subsections ---
+   Set in the body serif, not in Oswald. Oswald ships a weight
+   axis and no italic, so an italic heading in it is a synthetic
+   oblique that WebKit slants by shear. Crimson Text has a drawn
+   italic. */
 h3 {
-    font-size: var(--print-h3-size);
+    font-family: var(--font-body);
+    font-size: 1.0833em;        /* 13pt */
     font-weight: bold;
     font-style: italic;
     text-align: left;
@@ -590,8 +605,8 @@ pre code { padding: 0; background: none; }
 .title-page-spacer { flex: 1; }
 
 .author-footnote {
-    font-family: var(--font-heading);
-    font-size: 9pt;
+    font-family: var(--font-body);
+    font-size: 9.5pt;
     line-height: 1.4;
     border-top: 1px solid currentColor;
     padding-top: 0.1in;

@@ -84,17 +84,50 @@ iA Writer 8 does not read page geometry from CSS the way a browser does.
 
 | Template | Paper (Page Setup) | Top / header | Bottom / footer | Left | Right |
 |:--|:--|:--|:--|:--|:--|
-| Screen | any | 72 | 72 | 1 in | 1 in |
-| Draft | US Letter | 72 | 72 | 1 in | 1 in |
 | Law Review | US Letter | 72 | 72 | 1.25 in | 1.25 in |
-| Submission | US Letter | 72 | 72 | 1 in | 1 in |
-| US Trade | 6 x 9 in | 45 (0.625 in) | 54 (0.75 in) | 1.0 in gutter | 0.625 in |
-| Digest | 5.5 x 8.5 in | 36 (0.5 in) | 45 (0.625 in) | 0.75 in gutter | 0.5 in |
-| Executive | 7 x 10 in | 54 (0.75 in) | 63 (0.875 in) | 1.125 in gutter | 0.75 in |
+| Draft | US Letter | 72 | 72 | 1 in | 1 in |
+| Double-Spaced | US Letter | 72 | 72 | 1 in | 1 in |
+| Executive | 7 x 10 in | 54 (0.75 in) | 63 (0.875 in) | 0.9375 in | 0.9375 in |
+| US Trade | 6 x 9 in | 45 (0.625 in) | 54 (0.75 in) | 0.8125 in | 0.8125 in |
+| Digest | 5.5 x 8.5 in | 36 (0.5 in) | 45 (0.625 in) | 0.625 in | 0.625 in |
+
+The three book templates carry a symmetric side margin, half of inside plus
+outside, and `tools/make_book.sh` supplies the gutter after the export. See
+"Mirror margins" below.
 
 The plist heights are documented as "CSS points" on GitHub and "CSS pixels" on iA's support page. The templates treat them as points (1/72 in), which is how a WebKit print maps CSS units. Check one exported PDF with a ruler before sending a book to Lulu.
 
-**Mirror margins:** WebKit cannot tell recto from verso, so the gutter is always on the left. For true mirror margins, use the pandoc-to-Word pipeline with reference documents that have mirror margins enabled.
+**Mirror margins:** WebKit has no notion of recto and verso, so whatever left
+margin the CSS sets is the left margin of every page. Rather than ship books
+with the gutter on the wrong side of every even page, the book templates export
+a symmetric margin and `tools/impose.swift` moves each page toward its own
+spine afterwards.
+
+The arithmetic. Let *i* be the inside margin and *o* the outside. The template
+sets both side margins to (*i* + *o*) / 2, so the text block already has its
+final width, centered. The tool then translates each page by (*i* − *o*) / 2,
+right on a recto page and left on a verso one. A recto page lands with *i* on
+its left and *o* on its right; a verso page lands the other way round.
+
+Each page is drawn once into a new `CGPDFContext` under that translation, which
+keeps text as text and leaves the embedded fonts embedded. Nothing is scaled,
+rasterized or re-flowed.
+
+| Trim | Inside | Outside | Symmetric export | Shift |
+|:--|:--|:--|:--|:--|
+| 7 x 10 | 1.125 in | 0.75 in | 0.9375 in | 13.5 pt |
+| 6 x 9 | 1.0 in | 0.625 in | 0.8125 in | 13.5 pt |
+| 5.5 x 8.5 | 0.75 in | 0.5 in | 0.625 in | 9 pt |
+
+Measured on `tests/fixtures/sample.md` through `composed.pdf`, on 2026-09-17,
+with PDFKit text-selection bounds. Before imposition every page of the 6 x 9
+render measured 58.5 pt on both sides; after it, odd pages measured 72.0 pt left
+and 45.0 pt right and even pages the reverse, which is 1.000 in and 0.625 in
+exactly. The 7 x 10 and 5.5 x 8.5 renders came out equally exact.
+
+Lulu's gutter allowance grows with a book's page count, so the inside margins
+above are a starting point for a book in the middle of the range. Check them
+against Lulu's current table for the actual page count before a print run.
 
 ## Page Break Limitations
 
@@ -138,7 +171,7 @@ The script copies only the shared files a bundle actually references (following 
 | File | Contents | Used by |
 |:--|:--|:--|
 | `shared/oranburg-variables.css` | palette, font stacks (with Hebrew fallback faces), light/dark/print colors, sizes, page-margin variables | all |
-| `shared/oranburg-common.css` | iA Writer markup: View > Font Size classes, print margins, page breaks, heading keep-with-next, footnotes, citations, `{{TOC}}`, highlights, math, content blocks, right-to-left text, header/footer/title page layout, Law of the Firm boxes | all |
+| `shared/oranburg-common.css` | iA Writer markup: View > Font Size classes, print margins, page breaks, heading keep-with-next, footnotes, citations, `{{TOC}}`, highlights, math, content blocks, the Hebrew tiers and flags, header/footer/title page layout, Law of the Firm boxes, Preview warnings | all |
 | `shared/oranburg-book-base.css` | book typography | US Trade, Digest, Executive |
 | `shared/oranburg.js` | footnote, citation, heading and box handling (below) | all |
 
@@ -148,7 +181,7 @@ Each template's `style.css` imports the shared files and adds only what is speci
 
 iA Writer replaces the `innerHTML` of the `data-document` element and then dispatches `ia-writer-change` on that element (the app's `Template.js`; the event does not bubble). The script listens there and reruns after every update. Features are switched on by attributes on `<body>` in `document.html`:
 
-- **Always:** normalizes a footnote reference into `<sup>`; marks the first H1 `.doc-title` and hides it from `{{TOC}}`; tags an H4 starting with 📜, 💡 or 📄 and the blockquote after it with `box-source`, `box-insight` or `box-transaction` (Law of the Firm convention, `LawOS/docs/writing/document-types/lotf-casebook.md`); fills an empty `data-author` on the title page with "Seth C. Oranburg".
+- **Always:** normalizes a footnote reference into `<sup>`; marks the first H1 `.doc-title` and hides it from `{{TOC}}`; tags an H4 starting with 📜, 💡 or 📄 and the blockquote after it with `box-source`, `box-insight` or `box-transaction` (Law of the Firm convention, `LawOS/docs/writing/document-types/lotf-casebook.md`) and hides those H4s from `{{TOC}}`, where each would otherwise take a line; marks the Hebrew blocks, tiers and flag strings described above; shows a Preview warning when the first H1 is a heading it recognizes as a section, because every template treats the first H1 as the document title and that file has silently lost a section; fills an empty `data-author` on the title page with "Seth C. Oranburg".
 - **`data-oranburg-citations="inline"`** (all templates): iA Writer renders a `[#CiteKey]` as a bracketed number, `[7]`, linked to a bibliography entry appended to the endnotes. Seth's convention puts each `[#CiteKey]` inside a footnote, so a printed note would read "*See* [7] at 11." The script replaces the number with the text of the `[#CiteKey]:` definition ("*See* Jane Roe, *An Invented Article*, 1 J. Nowhere 1 (2010) at 11.") and hides the now-duplicate entry. The definition's final period is dropped; the note supplies its own. A key with no definition is shown in red on screen.
 - **`data-oranburg-outline="legal"`** (Law Review): marks Abstract, Contents, Introduction, Conclusion, Acknowledgments, Appendix and similar H1/H2 headings `.unnumbered`; marks a heading whose text already starts with a number ("I. Title") `.self-numbered` so CSS does not number it twice; computes I / A / 1 / i / a for each heading and writes it onto the matching `{{TOC}}` link. The numbering itself stays in CSS counters, so it still works if scripts are off.
 
@@ -217,12 +250,78 @@ Name.iatemplate/
 **Settings > Templates** (the app's preferences pane): Web Preview has *Center headings*, *Indent paragraphs*, *Number headings* and *Invert colors*; Printing & PDF Export has *Title page*, *Headers* and *Footers*. Author name comes from Settings > Authors and fills `data-author`.
 
 
-## Hebrew and Right-to-Left Text
+## Hebrew and Aramaic
 
-`Conventions/hebrew-sources.md` in the iA Writer library lays Hebrew out in tiers and relies on Unicode bidi for direction. The templates support that without markup:
+`Conventions/hebrew-sources.md` in the iA Writer library is the standard. It
+declares SBL general-purpose romanization with four named deviations, lays
+Hebrew out in three tiers, and defines a set of exact flag strings for work
+that is not finished. The templates implement that file; where this document
+and that one disagree, that one wins.
 
-- Paragraphs, list items, headings, cells and captions use `unicode-bidi: plaintext`, so a paragraph whose first strong character is Hebrew runs right to left and an English paragraph with an inline Hebrew word stays left to right. An explicit `dir="rtl"` in HTML still wins.
-- Crimson Text, Oswald and Roboto have no Hebrew. `oranburg-variables.css` defines two fallback faces limited by `unicode-range` to the Hebrew blocks and puts them first in the font stacks: *Oranburg Hebrew Serif* (SBL Hebrew or Taamey Frank if installed, else New Peninim MT or Times New Roman, both on macOS, both with nikud) and *Oranburg Hebrew Sans* (Arial Hebrew). Latin text is unaffected. Installing SBL Hebrew gives the best cantillation.
+**Direction** relies on Unicode bidi, with no markup. Paragraphs, list items,
+headings, cells and captions carry `unicode-bidi: plaintext`, so a paragraph
+whose first strong character is Hebrew runs right to left and an English
+paragraph with an inline Hebrew word stays left to right. An explicit
+`dir="rtl"` still wins.
+
+`plaintext` sets the inline direction and leaves `text-align` alone, so a
+Hebrew paragraph in a justified template would have hung its last line on the
+left. `oranburg.js` therefore also adds `.hebrew-block` to any element whose
+first strong character is Hebrew, and the class sets `text-align: right` and
+turns justification off. Justified Hebrew is worth avoiding on its own account:
+WebKit stretches the spaces around a maqaf and the nikud drift off their
+letters.
+
+**Leading.** Nikud sits below the baseline and ta'amim above it. At the 1.15 the
+Latin body uses, pointed Hebrew crowds and cantillated Hebrew collides.
+`.hebrew-block` takes `--line-height-hebrew-print` (1.5) and
+`--line-height-hebrew` (1.7) instead.
+
+**The tiers.** `oranburg.js` recognizes them from the shape the convention
+prescribes, since the Markdown carries no markup to hook onto:
+
+- *Tier 1* is a blockquote that starts Hebrew, optionally a second blockquote
+  after it holding the English, then a short italic line: the citation and
+  edition. The citation line gets `.source-citation`, the gap between the
+  blockquotes closes, and the group is kept on one page.
+- *Tier 2* is a Hebrew paragraph, a paragraph whose entire content is one `<em>`
+  (the romanization), and a paragraph opening with a quotation mark (the gloss).
+  All three get `.tier2`, lose the first-line indent, and are set off from the
+  body above and below. A Hebrew paragraph inside a blockquote is skipped, since
+  that is Tier 1.
+- *Tier 3* needs nothing beyond the direction rule.
+
+The Tier 2 test is a heuristic and it can miss. A romanization line carrying a
+trailing citation in roman type falls out of the pattern and is styled as body
+text, which is a silent degradation rather than a wrong one.
+
+**Flag strings** are matched exactly, as the convention requires, including the
+two that carry an argument (`[Vocalization: ...]`, `[Not fetched: ...]`). Each
+is wrapped in `.heb-flag` and boxed. They stay visible in print: a page that
+looks finished while a vocalization is still unattributed is worse than a page
+that admits it. `[Aramaic]` is a language label, so it takes the quieter
+`.heb-flag-label` grey.
+
+**Fonts.** Crimson Text, Oswald and Roboto have no Hebrew.
+`oranburg-variables.css` defines "Oranburg Hebrew Serif" and "Oranburg Hebrew
+Sans" with `unicode-range` limited to U+0590 to U+05FF, U+FB1D to U+FB4F, the
+RTL mark and the alef-bet symbols, and puts them first in the stacks, so Latin
+text is untouched. The serif stack is SBL Hebrew, Ezra SIL, Taamey Frank CLM,
+Frank Ruhl Libre, David Libre, Noto Serif Hebrew, New Peninim MT, Times New
+Roman.
+
+The order is by how well each face places marks. The first three were designed
+for pointed and cantillated Biblical text. The middle three place nikud well
+and ta'amim poorly. New Peninim MT and Times New Roman ship with macOS and are
+the floor. On 2026-09-17 this machine had Frank Ruhl Libre, David Libre and
+Noto Serif Hebrew installed and none of the first three, so Hebrew was
+resolving to Frank Ruhl Libre; `brew install --cask font-ezra-sil` moves it up
+two places for about a megabyte.
+
+A `local()` stack fails silently. To find out which face is actually drawing,
+open the Web Inspector on Preview (see below) and check the computed font on a
+Hebrew paragraph.
+
 
 ## Development and Debugging
 
@@ -238,7 +337,19 @@ Then right-click in Preview and select "Inspect Element."
 
 **Vertical margins:** Avoid setting vertical margins/padding on the document page body. iA Writer adjusts `<html>` padding in Preview to match the Editor. Top and bottom margins for PDF are controlled by header/footer heights in Info.plist.
 
-**Render test without iA Writer:** `tools/render_test.sh` converts `tests/fixtures/sample.md` into the HTML shapes iA Writer emits (`tools/ia_html.py`, via pandoc), loads each bundle's own `document.html` in WebKit, fills it the way `Template.js` does, and writes light and dark Preview snapshots, a WebKit print of the body with the plist margins, and a composed PDF with the title, header and footer pages drawn in (`tools/render.swift`). It is a model of iA Writer, not iA Writer; confirm in the app before trusting a detail. If `swiftc` reports that the SDK is newer than the compiler, run it with `SDKROOT=/Library/Developer/CommandLineTools/SDKs/MacOSX26.sdk`.
+**Which render output to measure.** `render_test.sh` writes two PDFs per
+bundle and they do not agree. `document.pdf` comes from an `NSPrintOperation`
+on a web view whose width in CSS pixels is set to the paper width in points,
+with `horizontalPagination = .fit`; AppKit scales that to the sheet, and every
+margin in it came out 1.0667 times the CSS value when measured on 2026-09-17.
+`composed.pdf` applies the 96-to-72 conversion explicitly and measured exact:
+72.0 pt where Draft asks for 1 in, 90.0 pt where Law Review asks for 1.25 in.
+**Measure `composed.pdf`.** A margin discrepancy seen in `document.pdf` is the
+harness, not the template.
+
+**Render test without iA Writer:** `tools/render_test.sh` converts `tests/fixtures/sample.md` into the HTML shapes iA Writer emits (`tools/ia_html.py`, via pandoc), loads each bundle's own `document.html` in WebKit, fills it the way `Template.js` does, and writes light and dark Preview snapshots, a WebKit print of the body with the plist margins, and a composed PDF with the title, header and footer pages drawn in (`tools/render.swift`). It is a model of iA Writer, not iA Writer; confirm in the app before trusting a detail. The script now picks an older SDK itself when one is present, because a macOS
+update routinely leaves the command-line `swiftc` older than the default SDK.
+Setting `SDKROOT` by hand still overrides it.
 
 **Toolbar color:** iA Writer matches the Preview toolbar color to the template. Set `color` and `background-color` on the `<html>` element for this to work correctly.
 

@@ -67,7 +67,8 @@ h1 { font-size: var(--print-h1-size); font-weight: var(--print-h1-weight); color
 h2 { font-size: var(--print-h2-size); font-weight: var(--print-h2-weight); color: var(--color-h2); margin-top: 1.75em; }
 h3 { font-size: var(--print-h3-size); font-weight: var(--print-h3-weight); color: var(--color-h3); margin-top: 1.5em; }
 h4 { font-family: var(--font-ui); font-size: var(--print-h4-size); font-weight: var(--print-h4-weight); color: var(--color-h4); margin-top: 1.25em; }
-h5 { font-size: 1em; font-weight: 400; font-style: italic; color: var(--color-h4); margin-top: 1em; }
+/* Body serif: Oswald has a weight axis and no drawn italic */
+h5 { font-family: var(--font-body); font-size: 1em; font-weight: 400; font-style: italic; color: var(--color-h4); margin-top: 1em; }
 h6 { font-size: 0.9em; font-weight: 400; color: var(--color-muted); margin-top: 1em; }
 
 /* Title: first H1 in the document */

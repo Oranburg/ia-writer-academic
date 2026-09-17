@@ -259,13 +259,22 @@ a.citation .cite-text {
     text-decoration: none;
 }
 
-/* The document title is not a section; iA lists it first */
-.TOC a.toc-doc-title {
+/* Entries that are not sections: the document title, which iA
+   lists first, the Contents heading itself, and the Law of the
+   Firm boxes, which are H4s and so would otherwise each take a
+   line. oranburg.js marks the links. */
+.TOC a.toc-doc-title,
+.TOC a.toc-omit {
     display: none;
 }
 
 .TOC li:has(> a.toc-doc-title) > ul {
     padding-left: 0;
+}
+
+/* A list item whose only content was an omitted link collapses */
+.TOC li:has(> a.toc-omit):not(:has(ul)) {
+    display: none;
 }
 
 .TOC a[data-outline]::before {
@@ -367,13 +376,17 @@ th p {
 
 
 /* =========================================================
-   10. HEBREW AND OTHER RIGHT-TO-LEFT TEXT
-   Conventions/hebrew-sources.md relies on Unicode bidi to set
-   direction: a paragraph, list item, heading or cell whose
-   first strong character is Hebrew runs right to left; an
-   English paragraph with an inline Hebrew word stays left to
-   right. The Hebrew glyphs come from the fallback faces in
-   oranburg-variables.css §0.
+   10. HEBREW AND ARAMAIC
+   Conventions/hebrew-sources.md is the standard. It relies
+   on Unicode bidi for direction and lays Hebrew out in three
+   tiers. oranburg.js marks the tiers; the direction rules
+   below work with scripts off.
+
+   10a. Direction. A paragraph, list item, heading or cell
+   whose first strong character is Hebrew runs right to left;
+   an English paragraph holding an inline Hebrew word stays
+   left to right. Glyphs come from the fallback faces in
+   oranburg-variables.css section 0.
    ========================================================= */
 p, li, dt, dd, blockquote, figcaption, caption, td, th,
 h1, h2, h3, h4, h5, h6 {
@@ -384,6 +397,136 @@ h1, h2, h3, h4, h5, h6 {
 [dir="rtl"] {
     unicode-bidi: isolate;
     text-align: right;
+}
+
+/* 10b. Leading. Nikud sits below the baseline and ta'amim sit
+   above it, so Hebrew needs more room between lines than the
+   1.15 the Latin body uses. oranburg.js adds .hebrew-block to
+   any element whose first strong character is Hebrew. */
+.hebrew-block {
+    line-height: var(--line-height-hebrew);
+    text-align: right;
+}
+
+@media print {
+    .hebrew-block {
+        line-height: var(--line-height-hebrew-print);
+    }
+}
+
+/* Justification breaks Hebrew badly: WebKit stretches the
+   spaces around the maqaf and drives nikud off the letters. */
+.hebrew-block {
+    text-align: right !important;
+    -webkit-hyphens: none;
+    hyphens: none;
+}
+
+/* 10c. Tier 1, quotation. Two stacked blockquotes, Hebrew
+   then English, with the citation and edition italicized
+   below. They are one unit, so the gap between them closes
+   and the pair stays on one page. */
+blockquote.hebrew-block + blockquote {
+    margin-top: 0.35em;
+}
+
+blockquote.hebrew-block {
+    margin-bottom: 0;
+}
+
+.source-citation {
+    text-indent: 0 !important;
+    margin-top: 0.25em;
+    margin-bottom: 0.8em;   /* closes the quotation before body text resumes */
+    font-size: var(--font-size-footnote);
+    color: var(--color-muted);
+}
+
+@media print {
+    blockquote.hebrew-block,
+    blockquote.hebrew-block + blockquote,
+    .source-citation {
+        page-break-inside: avoid;
+        break-inside: avoid;
+    }
+
+    blockquote.hebrew-block { page-break-after: avoid; break-after: avoid; }
+    blockquote.hebrew-block + blockquote { page-break-after: avoid; break-after: avoid; }
+    .source-citation { color: var(--black); }
+}
+
+@media screen {
+    /* The rule belongs on the side the text starts from */
+    blockquote.hebrew-block {
+        border-left: 0;
+        border-right: 3px solid var(--color-rule);
+        padding-left: 0;
+        padding-right: 1.2em;
+    }
+}
+
+/* 10d. Tier 2, teaching block. Hebrew, then the romanization
+   in italic, then the gloss in quotation marks, each its own
+   paragraph. The three read as one unit and take no first
+   line indent. */
+.tier2 {
+    text-indent: 0 !important;
+    margin: 0;
+}
+
+.tier2-hebrew {
+    margin-top: 0.9em;
+    font-size: 1.08em;
+}
+
+.tier2-translit,
+.tier2-gloss {
+    text-align: left !important;
+    padding-left: var(--indent-block);
+}
+
+.tier2-gloss {
+    margin-bottom: 0.9em;
+}
+
+@media print {
+    .tier2-hebrew,
+    .tier2-translit,
+    .tier2-gloss {
+        page-break-inside: avoid;
+        break-inside: avoid;
+    }
+
+    .tier2-hebrew, .tier2-translit { page-break-after: avoid; break-after: avoid; }
+}
+
+/* 10e. Flag strings. Conventions/hebrew-sources.md defines
+   these as exact search targets for work that is not finished:
+   [Aramaic], [Editorial nikud: verify], [Vocalization: ...],
+   [Gloss pending], [Unverified: no corpus hit], [Not fetched:
+   ...], [Mixed register: needs human]. They are loud on
+   screen so they get resolved, and they stay visible in print
+   rather than disappearing into a page that looks finished. */
+.heb-flag {
+    font-family: var(--font-mono);
+    font-size: 0.8em;
+    color: var(--color-flag);
+    border: 1px solid var(--color-flag);
+    border-radius: 2px;
+    padding: 0 0.25em;
+    white-space: nowrap;
+}
+
+.heb-flag.heb-flag-label {
+    color: var(--color-muted);
+    border-color: var(--color-muted);
+}
+
+@media print {
+    .heb-flag {
+        color: var(--black);
+        border-color: var(--black);
+    }
 }
 
 
@@ -524,4 +667,29 @@ blockquote.box-source {
 
 blockquote.box-transaction {
     font-family: var(--font-typewriter);
+}
+
+
+/* =========================================================
+   14. PREVIEW WARNINGS
+   oranburg.js inserts these when a file is built in a way the
+   template will silently mishandle. Screen only: a warning
+   printed into a manuscript is worse than the mistake.
+   ========================================================= */
+.oranburg-warning {
+    font-family: var(--font-ui);
+    font-size: 0.85em;
+    line-height: 1.4;
+    text-indent: 0;
+    color: var(--color-flag);
+    border: 1px solid var(--color-flag);
+    border-radius: 3px;
+    padding: 0.6em 0.8em;
+    margin: 1em 0;
+}
+
+@media print {
+    .oranburg-warning {
+        display: none;
+    }
 }

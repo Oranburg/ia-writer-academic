@@ -24,7 +24,11 @@
       number (I, A, 1, i, a) onto {{TOC}} links.
    4. Law of the Firm boxes: an H4 starting with 📜, 💡 or
       📄 and the blockquote after it get box-* classes.
-   5. Title page: fills the author when iA Writer has none.
+   5. Hebrew and Aramaic (Conventions/hebrew-sources.md):
+      marks any block whose first strong character is Hebrew,
+      groups a Tier 2 teaching block, marks the citation line
+      under a Tier 1 quotation, and boxes the flag strings.
+   6. Title page: fills the author when iA Writer has none.
 
    Shared source: shared/oranburg.js. tools/build.py copies it
    into each bundle.
@@ -202,10 +206,171 @@
                 a.removeAttribute("data-outline");
             }
             a.classList.toggle("toc-doc-title", !!target && target.classList.contains("doc-title"));
+            /* A box is not a section, and the Contents heading does
+               not list itself. */
+            a.classList.toggle("toc-omit", !!target && (
+                target.classList.contains("box-title") ||
+                target.classList.contains("contents-heading") ||
+                /^(table of )?contents$/i.test(headingText(a))));
         });
     }
 
-    /* 4. Law of the Firm boxes ---------------------------------------- */
+    /* 3b. The swallowed-title warning ---------------------------------
+       Every template treats the first H1 as the document title:
+       centered, unnumbered, left out of the Contents. A file that
+       opens with a section heading instead of the article title
+       therefore loses that section, and the outline starts at I on
+       the second one. The mistake is silent in print, so it is
+       named on screen. */
+    function warnOnSwallowedTitle(root) {
+        var existing = root.querySelector(".oranburg-warning");
+        var firstH1 = root.querySelector(":scope > h1");
+        var swallowed = firstH1 && STRUCTURAL.test(headingText(firstH1));
+        if (!swallowed) {
+            if (existing) { existing.parentNode.removeChild(existing); }
+            return;
+        }
+        if (existing) { return; }
+        var div = document.createElement("div");
+        div.className = "oranburg-warning";
+        div.textContent = "\u201C" + headingText(firstH1) + "\u201D is the first " +
+            "heading in this file, so the template is treating it as the article " +
+            "title: it is centered, it is not numbered, and it is left out of the " +
+            "Contents. Put the article title above it as its own # heading.";
+        firstH1.parentNode.insertBefore(div, firstH1);
+    }
+
+    /* 4. Hebrew and Aramaic -------------------------------------------- */
+
+    /* Hebrew and Aramaic letters, presentation forms, and the
+       numeral-like alef/bet/gimel signs. */
+    var HEB = /[\u0590-\u05FF\uFB1D-\uFB4F]/;
+
+    /* The first character with a strong direction, which is what
+       Unicode bidi uses to set a paragraph's direction. Latin,
+       Greek and Cyrillic are strong left to right; the Hebrew
+       block is strong right to left. Marks, digits, spaces and
+       punctuation are skipped. */
+    var STRONG_LTR = /[A-Za-z\u00C0-\u024F\u0370-\u03FF\u0400-\u04FF]/;
+
+    function firstStrongIsHebrew(el) {
+        var text = el.textContent || "";
+        for (var i = 0; i < text.length; i++) {
+            var c = text.charAt(i);
+            if (HEB.test(c)) { return true; }
+            if (STRONG_LTR.test(c)) { return false; }
+        }
+        return false;
+    }
+
+    /* Conventions/hebrew-sources.md defines these as exact search
+       targets. The pattern matches the whole bracketed string so a
+       flag carrying its own argument still boxes. */
+    var FLAG_RE = new RegExp(
+        "\\[(?:Aramaic|Mixed register: needs human|Editorial nikud: verify" +
+        "|Vocalization:[^\\]]*|Gloss pending|Unverified: no corpus hit" +
+        "|Not fetched:[^\\]]*)\\]", "g");
+
+    function markHebrewFlags(root) {
+        var walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, null);
+        var targets = [], node;
+        while ((node = walker.nextNode())) {
+            if (node.parentElement && node.parentElement.closest(".heb-flag")) {
+                continue;
+            }
+            FLAG_RE.lastIndex = 0;
+            if (FLAG_RE.test(node.nodeValue || "")) {
+                targets.push(node);
+            }
+        }
+        targets.forEach(function (t) {
+            var frag = document.createDocumentFragment();
+            var text = t.nodeValue, last = 0, m;
+            FLAG_RE.lastIndex = 0;
+            while ((m = FLAG_RE.exec(text))) {
+                if (m.index > last) {
+                    frag.appendChild(document.createTextNode(text.slice(last, m.index)));
+                }
+                var span = document.createElement("span");
+                span.className = "heb-flag";
+                if (m[0] === "[Aramaic]") {
+                    span.className += " heb-flag-label";   // a label, not a defect
+                }
+                span.textContent = m[0];
+                frag.appendChild(span);
+                last = m.index + m[0].length;
+            }
+            if (last < text.length) {
+                frag.appendChild(document.createTextNode(text.slice(last)));
+            }
+            t.parentNode.replaceChild(frag, t);
+        });
+    }
+
+    /* A paragraph holding one <em> and nothing else: the
+       romanization line of a Tier 2 teaching block. */
+    function isAllItalic(p) {
+        if (!p || p.tagName !== "P") { return false; }
+        var kids = Array.prototype.filter.call(p.childNodes, function (n) {
+            return n.nodeType !== 3 || (n.nodeValue || "").trim() !== "";
+        });
+        return kids.length === 1 && kids[0].nodeType === 1 &&
+               (kids[0].tagName === "EM" || kids[0].tagName === "I");
+    }
+
+    function isGloss(p) {
+        if (!p || p.tagName !== "P") { return false; }
+        return /^\s*["\u201C\u2018'(]/.test(p.textContent || "");
+    }
+
+    /* Italic text on its own line, used as the citation and
+       edition under a Tier 1 quotation. */
+    function isCitationLine(p) {
+        if (!p || p.tagName !== "P") { return false; }
+        var t = (p.textContent || "").trim();
+        return t.length > 0 && t.length < 300 && p.querySelector("em, i") !== null;
+    }
+
+    function markHebrew(root) {
+        /* Direction and leading, for every block that starts Hebrew */
+        each(root.querySelectorAll("p, blockquote, li, td, th, h1, h2, h3, h4, h5, h6"),
+            function (el) {
+                el.classList.toggle("hebrew-block", firstStrongIsHebrew(el));
+            });
+
+        /* Tier 1: Hebrew blockquote, English blockquote, citation */
+        each(root.querySelectorAll("blockquote.hebrew-block"), function (bq) {
+            var english = bq.nextElementSibling;
+            var cite = english && english.tagName === "BLOCKQUOTE"
+                ? english.nextElementSibling : bq.nextElementSibling;
+            if (cite && isCitationLine(cite) && !cite.classList.contains("hebrew-block")) {
+                cite.classList.add("source-citation");
+            }
+        });
+
+        /* Tier 2: Hebrew line, romanization, gloss */
+        each(root.querySelectorAll("p.hebrew-block"), function (heb) {
+            if (heb.parentElement && heb.parentElement.tagName === "BLOCKQUOTE") {
+                return;
+            }
+            var translit = heb.nextElementSibling;
+            if (!isAllItalic(translit)) {
+                return;
+            }
+            var gloss = translit.nextElementSibling;
+            heb.classList.add("tier2", "tier2-hebrew");
+            translit.classList.add("tier2", "tier2-translit");
+            if (isGloss(gloss)) {
+                gloss.classList.add("tier2", "tier2-gloss");
+            } else {
+                translit.classList.add("tier2-gloss");   /* closes the unit */
+            }
+        });
+
+        markHebrewFlags(root);
+    }
+
+    /* 5. Law of the Firm boxes ---------------------------------------- */
     function markBoxes(root) {
         each(root.querySelectorAll("h4"), function (h) {
             var text = (h.textContent || "").trim();
@@ -222,7 +387,7 @@
         });
     }
 
-    /* 5. Title page author ---------------------------------------------- */
+    /* 6. Title page author ---------------------------------------------- */
     function fillAuthor() {
         each(document.querySelectorAll("[data-author]"), function (el) {
             if (!(el.textContent || "").replace(/ /g, " ").trim()) {
@@ -242,7 +407,9 @@
                 }
                 markBoxes(root);
                 markHeadings(root, root.getAttribute("data-oranburg-outline") === "legal");
+                markHebrew(root);
                 numberTOC(root);
+                warnOnSwallowedTitle(root);
             } catch (e) {
                 if (window.console) { console.error("oranburg.js", e); }
             }

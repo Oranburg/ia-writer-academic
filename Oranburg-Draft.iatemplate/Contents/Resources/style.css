@@ -109,7 +109,8 @@ h5, h6 {
     margin-top: 1em;
 }
 
-h5 { font-weight: 400; font-style: italic; }
+/* Body serif: Oswald has a weight axis and no drawn italic */
+h5 { font-family: var(--font-body); font-weight: 400; font-style: italic; }
 h6 { font-weight: 400; color: var(--color-muted); }
 
 /* Title: first H1 in the document */

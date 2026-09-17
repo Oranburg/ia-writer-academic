@@ -53,6 +53,8 @@ A second paragraph takes a first-line indent. Duis aute irure dolor in reprehend
 
 *Mishneh Torah, Foundations of the Torah 8:1* (Torat Emet 363)
 
+The vocalization here was supplied rather than found in the edition. [Vocalization: Jastrow] The next phrase is [Aramaic] and one word is still open. [Gloss pending]
+
 שֶׁהֵם וְהוּא עֵדִים בַּדָּבָר
 
 *she-hem ve-hu eidim ba-davar*
