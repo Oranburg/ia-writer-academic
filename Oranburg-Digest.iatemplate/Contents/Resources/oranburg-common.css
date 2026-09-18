@@ -745,13 +745,20 @@ a, .url {
 }
 
 /* Hyphenation breaks words far too eagerly at this measure:
-   "liabili-ty" and "mani-festation" both appeared on one page. Require
-   a longer word and more letters either side of the break. */
+   "liabil-ity" and "mani-festation" both appeared on one page.
+
+   Every template but Law Review sets ragged right, where a hyphen buys
+   almost nothing, so hyphenate rarely. The values are measured, not
+   reasoned: at 4 WebKit still broke "liabil-ity" with three letters
+   after the break, so the limit does not map one-to-one onto letters;
+   at 6 both breaks were gone. Law Review justifies, where a hyphen is
+   what keeps the word spaces even, and it sets its own looser limits.
+   Tighten these and a justified template will open rivers. */
 p, li, blockquote, td, th {
-    -webkit-hyphenate-limit-before: 4;
-    -webkit-hyphenate-limit-after: 4;
+    -webkit-hyphenate-limit-before: 6;
+    -webkit-hyphenate-limit-after: 6;
     -webkit-hyphenate-limit-lines: 2;
-    hyphenate-limit-chars: 8 4 4;
+    hyphenate-limit-chars: 12 6 6;
     hyphenate-limit-lines: 2;
 }
 

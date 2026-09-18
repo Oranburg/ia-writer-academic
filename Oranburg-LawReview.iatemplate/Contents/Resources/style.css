@@ -621,6 +621,33 @@ pre code { padding: 0; background: none; }
     line-height: 1.4;
     border-top: 1px solid currentColor;
     padding-top: 0.1in;
-    text-align: justify;
+    /* Ragged right, unlike the body notes. Justified, it spread its word
+       spaces wide, and hyphenation cannot rescue it: nearly every long
+       word in an author note is a capitalised proper noun (Entrepreneur-
+       ship, Catholic, University, America) and the hyphenator will not
+       break those. Tried and measured 2026-09-17; the gaps survived. */
+    text-align: left;
+    -webkit-hyphens: none;
+    hyphens: none;
     color: var(--color-muted);
+}
+
+/* =========================================================
+   JUSTIFIED TEXT NEEDS ITS HYPHENS
+   This is the one template that justifies: body, notes and the
+   star note, as law review convention expects. The shared limits
+   (oranburg-common.css, 6 either side) are set for ragged-right
+   text and would starve a justified line of break points, opening
+   exactly the wide word spaces they exist to prevent. Restore the
+   ordinary English limits here: three letters either side.
+   ========================================================= */
+p, li, blockquote, td, th,
+.footnotes, .footnotes p, .footnotes li {
+    -webkit-hyphens: auto;
+    hyphens: auto;
+    -webkit-hyphenate-limit-before: 3;
+    -webkit-hyphenate-limit-after: 3;
+    -webkit-hyphenate-limit-lines: 2;
+    hyphenate-limit-chars: 6 3 3;
+    hyphenate-limit-lines: 2;
 }

@@ -336,19 +336,37 @@
 
     /* Space above each level. Halved from the old 2/1.75/1.5/1.25em,
        which cost about 1.5 pages of a 7-page teaching sheet. */
-    /* H2 and H3 differ by one point, 6.7%, at the same weight, case
-       and alignment -- below the threshold a reader registers. Size
-       has nowhere to go: H2 cannot grow without crowding H1, and H3
-       cannot shrink without colliding with H4 at body size. So the
-       distinction is carried by space, which is the strongest signal
-       available in a one-face document and the only one that survives
-       a photocopier. A clear band above H2, almost none above H3. */
-    --space-h1:         1.40em;
-    --space-h2:         1.55em;
-    --space-h3:         0.42em;
-    --space-h4:         0.60em;
+    /* SPACE ABOVE EACH LEVEL. Seth's ruling 2026-09-17: "fix the
+       heading spacing".
+
+       Each value is in em, and an em in a heading's margin is that
+       heading's OWN size, so the ladder is designed in points and
+       converted. Designing in em directly is how the first attempt
+       went wrong: it put 7.2pt above H4 and only 5.5pt above H3, so a
+       subordinate level had more air than its parent, and H1 (22.4pt)
+       barely outranked H2 (21.7pt).
+
+         level  size   space above   em
+         H1     16pt   28pt          1.75
+         H2     14pt   22pt          1.57    a band: about 1.5 lines
+         H3     13pt    8pt          0.62    tight: a subdivision
+         H4     12pt    7pt          0.58
+         H5     12pt    6pt          0.50
+         H6     11pt    6pt          0.55
+
+       Strictly decreasing, so no level ever gets more air than the one
+       above it. The one large step is H2 to H3, 22pt against 8pt,
+       because that is the joint size cannot carry: the two differ by
+       one point, 6.7%, at the same weight and case. The eye reads the
+       band of air as a section break and the tight head as a division
+       of what precedes it. Space survives a photocopier; colour and
+       small size differences do not. */
+    --space-h1:         1.75em;
+    --space-h2:         1.57em;
+    --space-h3:         0.62em;
+    --space-h4:         0.58em;
     --space-h5:         0.50em;
-    --space-h6:         0.50em;
+    --space-h6:         0.55em;
 }
 
 
