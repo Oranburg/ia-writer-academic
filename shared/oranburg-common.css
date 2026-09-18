@@ -733,6 +733,15 @@ blockquote.box-transaction {
    (Times has no `onum` either, so figures are lining. Nothing to
    be done about that in this family.)
    ========================================================= */
+/* Table cells never hyphenate. A cell is scanned, not read, and it is
+   narrow by design: Law Review's table header printed "pow-" over "er?".
+   Determined by the K session, 2026-09-18. Law Review's justified-text
+   rule deliberately leaves td and th out so that this one stands. */
+td, th {
+    -webkit-hyphens: none;
+    hyphens: none;
+}
+
 /* An address is never hyphenated. Hyphenation treated "sefaria" in a
    URL as a word and printed "sefari-a.org", which a reader typing it
    from paper turns into a dead link. overflow-wrap: anywhere still lets

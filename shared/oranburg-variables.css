@@ -183,7 +183,13 @@
     --font-typewriter:  "Courier Prime", "Courier New", Courier, monospace;
 
     /* Submission override (law reviews). TNR has Hebrew on macOS. */
-    --font-submission:  "Times New Roman", Times, serif;
+    /* The Hebrew family must come first here too. Without it the
+       Hebrew range fell through to plain Times at its native 0.837
+       proportion: measured 1.000 of body in Double-Spaced against 1.075
+       everywhere else (K session, 2026-09-18). Same order as --font-body. */
+    --font-submission:  var(--font-hebrew-override, "Oranburg Hebrew TNR"),
+                        "Oranburg Hebrew Tinos",
+                        "Times New Roman", Tinos, "Liberation Serif", Times, serif;
 }
 
 

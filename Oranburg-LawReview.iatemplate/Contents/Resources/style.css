@@ -640,8 +640,8 @@ pre code { padding: 0; background: none; }
    exactly the wide word spaces they exist to prevent. Restore the
    ordinary English limits here: three letters either side.
    ========================================================= */
-p, li, blockquote, td, th,
-.footnotes, .footnotes p, .footnotes li {
+p, li, blockquote,
+.footnotes, .footnotes p, .footnotes li {   /* not td, th: see common.css */
     -webkit-hyphens: auto;
     hyphens: auto;
     -webkit-hyphenate-limit-before: 3;
