@@ -7,7 +7,8 @@ A family of [iA Writer](https://ia.net/writer) templates for academic writing, l
 | Template | Use Case | Print Format |
 |:--|:--|:--|
 | **Oranburg Law Review** | Bluebook law review manuscripts | 8.5 x 11, 1 in / 1.25 in margins, title page, legal outline numbering (I, A, 1, i, a) |
-| **Oranburg Draft** | Working manuscripts | 8.5 x 11, 1 in margins, Crimson Text 12pt, 1.15 spacing |
+| **Oranburg Draft** | Working manuscripts | 8.5 x 11, 1 in margins, Times New Roman 12pt |
+| **Oranburg Teaching Notes** | Class prep sheets, printed and taught from | 8.5 x 11, 1.3 in left (an annotation gutter) and 0.7 in right, 11pt |
 | **Oranburg Double-Spaced** | Reading and markup copies | 8.5 x 11, 1 in margins, Times New Roman 12pt, double-spaced |
 | **Oranburg Executive** | Law school casebooks | 7 x 10, gutter margin, running headers |
 | **Oranburg US Trade** | Scholarly monographs | 6 x 9, gutter margin, running headers |
@@ -25,9 +26,9 @@ The retired **Oranburg Screen** template sits in `archive/`, where `tools/build.
 
 All templates share a consistent on-screen experience with differentiated print output.
 
-**On screen:** Color-coded heading hierarchy helps you see document structure at a glance. Crimson Text body, Oswald headings, comfortable line spacing. Text size follows iA Writer's View > Font Size. Full dark mode support with pure black (`#000000`) background.
+**On screen:** Color-coded heading hierarchy helps you see document structure at a glance. Times New Roman throughout, comfortable line spacing. Text size follows iA Writer's View > Font Size. Full dark mode support with pure black (`#000000`) background.
 
-**In print/PDF:** All black text. Hierarchy expressed through font family, weight, and size only. Each template targets a specific page size and margin set.
+**In print/PDF:** All black text, one family. Hierarchy is expressed through size, weight, style, case and space, never by changing the face. Each template targets a specific page size and margin set.
 
 ### Heading Colors
 
@@ -41,16 +42,55 @@ All templates share a consistent on-screen experience with differentiated print 
 
 ### Typography
 
-| Role | Font | Source |
+**Times New Roman sets everything**: body text, all six heading levels, running
+heads and folios. That is the author's ruling of 2026-09-17. Nothing in document
+text is condensed, sans, or another serif.
+
+| Role | Font | Getting it |
 |:--|:--|:--|
-| Body text | Crimson Text | [Google Fonts](https://fonts.google.com/specimen/Crimson+Text) |
-| Headings | Oswald | [Google Fonts](https://fonts.google.com/specimen/Oswald) |
-| UI / Sans body | Roboto | [Google Fonts](https://fonts.google.com/specimen/Roboto) |
-| Code | Roboto Mono | [Google Fonts](https://fonts.google.com/specimen/Roboto+Mono) |
+| Everything | Times New Roman | ships with macOS and with Microsoft Office |
+| The same, in a build | Tinos | `brew install --cask font-tinos` |
+| Code | Roboto Mono | `brew install --cask font-roboto-mono` (optional; falls back to SF Mono or Menlo) |
+| Heavily accented Hebrew | Ezra SIL | `brew install --cask font-ezra-sil` (optional; see below) |
 
-Install Crimson Text, Oswald and Roboto locally (Google Fonts, or `brew install --cask font-crimson-text font-oswald font-roboto`). Roboto Mono is optional.
+On a Mac nothing needs installing: Times New Roman is already there.
 
-Oswald ships a weight axis and no drawn italic, so no template sets an italic heading in it. Levels that want an italic heading use Crimson Text, which has one. A heading whose italic looks sheared means the rule was reintroduced somewhere.
+**Tinos is Times New Roman's metric twin**, not a lookalike. Every advance width
+and the line metrics match it to the unit, so a document paginates identically.
+Times New Roman is licensed with the system and may not be copied into a
+repository. Any build that vendors its fonts and makes its own PDFs therefore
+uses Tinos, and Times New Roman never enters that build.
+`python3 tools/font_metrics.py` re-checks the match.
+
+**The heading ladder**, one family, each level separated from the one above by
+something other than the face:
+
+| Level | Size | Style | Space above |
+|:--|--:|:--|--:|
+| H1 | 16pt | bold | 28pt |
+| H2 | 14pt | bold | 22pt |
+| H3 | 13pt | bold | 8pt |
+| H4 | 12pt | bold italic | 7pt |
+| H5 | 12pt | italic | 6pt |
+| H6 | 11pt | capitals, tracked, grey | 6pt |
+
+The space above decreases strictly, so no level ever has more air than the one
+it belongs to. The large step between H2 and H3 is deliberate: the two are one
+point apart, too little for a reader to see, so space carries the difference.
+
+**No small caps anywhere.** Times New Roman has no drawn small caps, so every
+renderer fakes them by shrinking capitals and thinning their strokes. Where a
+book would use small caps, these templates use real capitals, tracked: H6, Law
+Review's Part headings, and every running head.
+
+**Leading: 1.22 declared, 1.1875 rendered.** WebKit, which is what iA Writer
+prints through, sets lines on whole pixels and rounds down. So the 1.22 in the
+stylesheet prints at 12pt as 19/16, or 14.25pt, and that is the house value.
+Teaching Notes declares 1.1 and prints 1.0909. Double-Spaced prints at exactly
+2.0. `docs/TYPOGRAPHY-SPEC.md` section 4.0 has the measurements.
+
+The full specification, H1 through H6 and every iA Writer feature, is in
+`docs/TYPOGRAPHY-SPEC.md`.
 
 ### Hebrew and Aramaic
 
@@ -58,7 +98,7 @@ Oswald ships a weight axis and no drawn italic, so no template sets an italic he
 
 **Direction** is left to Unicode bidi. A paragraph, heading, list item or cell whose first strong character is Hebrew runs right to left and is set flush right; an English paragraph holding an inline Hebrew word stays left to right. An explicit `dir="rtl"` still wins.
 
-**Leading.** Hebrew carrying nikud, and more so ta'amei ha-miqra, needs more room between lines than the 1.15 the Latin body uses. Any block that starts Hebrew gets 1.5 in print and 1.7 on screen, and it is set ragged, because justification makes WebKit stretch the spaces around a maqaf and push the points off their letters.
+**Leading.** Hebrew carrying nikud, and more so ta'amei ha-miqra, needs more room between lines than the Latin body's leading. Any block that starts Hebrew gets 1.5 in print and 1.7 on screen, and it is set ragged, because justification makes WebKit stretch the spaces around a maqaf and push the points off their letters.
 
 **The three tiers** are styled as the convention defines them.
 
@@ -68,20 +108,28 @@ Oswald ships a weight axis and no drawn italic, so no template sets an italic he
 
 **Flag strings** are boxed so they are visible. `[Editorial nikud: verify]`, `[Vocalization: ...]`, `[Gloss pending]`, `[Unverified: no corpus hit]`, `[Not fetched: ...]` and `[Mixed register: needs human]` show in the flag color on screen and boxed in black in print. They stay visible in print on purpose: a page that looks finished while a vocalization is still unattributed is worse than a page that says so. `[Aramaic]` marks the language of a phrase, so it is boxed in grey.
 
-**Fonts.** Crimson Text, Oswald and Roboto have no Hebrew. `oranburg-variables.css` defines two fallback faces limited by `unicode-range` to the Hebrew blocks, so Latin text is untouched and Hebrew uses the first installed face that draws it:
+**Fonts.** Hebrew is set in Times New Roman's own Hebrew, which carries the full
+cantillation (ta'amei ha-miqra) and positions its own marks. It needs one
+correction. Times draws Hebrew small beside its own capitals: its alef stands at
+0.837 of its cap height, where faces drawn for both scripts sit near 0.90. So
+`oranburg-variables.css` scales Times's Hebrew, and only its Hebrew, to 107.5%
+with `size-adjust`. Latin text is untouched.
 
-| Preference | Face | Getting it |
-|:--|:--|:--|
-| 1 | SBL Hebrew | free from sbl-site.org, manual install |
-| 2 | Ezra SIL | `brew install --cask font-ezra-sil` |
-| 3 | Taamey Frank CLM | Culmus project, manual install |
-| 4 | Frank Ruhl Libre | `brew install --cask font-frank-ruhl-libre` |
-| 5 | David Libre | `brew install --cask font-david-libre` |
-| 6 | Noto Serif Hebrew | `brew install --cask font-noto-serif-hebrew` |
-| 7 | New Peninim MT | ships with macOS |
-| 8 | Times New Roman | ships with macOS |
+| Face | Used for | Hebrew scale |
+|:--|:--|--:|
+| Times New Roman | all Hebrew, when installed | 107.5% |
+| Tinos | all Hebrew, where Times is absent | 100%, already at 0.904 |
+| Ezra SIL | a heavily accented passage, marked `.hebrew-block` | 88%, since it runs large |
 
-The first three place nikud and cantillation correctly; the next three place nikud well and cantillation poorly; the last two are the floor. Installing any one of the first three is the largest single improvement available to a Hebrew page. Ezra SIL is the one of them that installs with a command.
+Ezra SIL is the best cantillation font available, and the switch to it takes a
+whole element, never a single word. Split a word across two fonts and its
+accents detach from their letters, because a mark can only be positioned
+against a letter from its own font.
+
+Frank Ruhl Libre, David Libre and Heebo are not used: none of them has
+cantillation glyphs. Where a different Hebrew face is right, as for unpointed
+modern text read by native readers, `--font-hebrew-override` changes it in one
+line. That breaks the pagination guarantee, so re-measure afterwards.
 
 ### Seth's Markdown Conventions
 
@@ -97,11 +145,11 @@ The first three place nikud and cantillation correctly; the next three place nik
 
 ### macOS
 
-1. Run `python3 tools/build.py` (it should end with `OK 6 bundles`).
+1. Run `python3 tools/build.py` (it should end with `OK 7 bundles`).
 2. Double-click each `.iatemplate` bundle in Finder, drag it onto iA Writer in the Dock, or use Settings > Templates > + > Install Template. When iA Writer reports a duplicate template, choose **Replace**.
 3. In Settings > Templates: under Web Preview turn **off** Number headings and Indent paragraphs (the templates do both); under Printing & PDF Export turn **on** Headers and Footers, and Title page for Law Review.
 4. Set your name in Settings > Authors; templates show it as the author.
-5. Before exporting a PDF, choose the paper size in **File > Page Setup**: US Letter for Law Review, Draft and Double-Spaced; a custom size of 7 x 10, 6 x 9 or 5.5 x 8.5 in (zero margins) for Executive, US Trade and Digest.
+5. Before exporting a PDF, choose the paper size in **File > Page Setup**: US Letter for Law Review, Draft, Double-Spaced and Teaching Notes; a custom size of 7 x 10, 6 x 9 or 5.5 x 8.5 in (zero margins) for Executive, US Trade and Digest.
 
 **Note:** iA Writer copies templates when installed. If you modify the originals after installation, reinstall them. To find installed templates, right-click one in Settings and select "Show in Finder."
 
@@ -160,10 +208,16 @@ tools/
     render_test.sh              Headless render of every template (no iA Writer needed)
     ia_html.py, render.swift    Parts of the render test
     make_book.sh, impose.swift  Give an exported book PDF its binding gutter
+    font_metrics.py             Re-measure the fonts the spec relies on
+    retype_word_template.py     Rebuild the Word templates to the same ladder
+word/                           Oranburg Article.dotx and Oranburg Submission.dotx,
+                                the Word templates, matched to these
+docs/TYPOGRAPHY-SPEC.md         The full typographic specification
 tests/fixtures/sample.md        Synthetic test document
 
 Oranburg-LawReview.iatemplate/    Bluebook law review with outline numbering
 Oranburg-Draft.iatemplate/        8.5x11 working draft
+Oranburg-TeachingNotes.iatemplate/ 8.5x11 class prep sheet with an annotation gutter
 Oranburg-DoubleSpaced.iatemplate/ TNR double-spaced reading and markup copy
 Oranburg-Executive.iatemplate/    7x10 casebook
 Oranburg-USTrade.iatemplate/      6x9 monograph
