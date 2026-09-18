@@ -170,9 +170,10 @@
        family that covers the Hebrew range. Two cautions. It only
        makes sense for text with no ta'amim, because Frank Ruhl
        Libre, David Libre and Heebo carry no cantillation glyphs
-       at all. And it breaks the Tinos metric identity: only
-       Tinos-for-Times leaves pagination unchanged, so a pack that
-       overrides the face must be re-measured, not assumed. */
+       at all. And it voids the Tinos pagination guarantee, which
+       holds only between Tinos and Times: after setting an
+       override, run `python3 tools/font_metrics.py` and re-measure
+       the pack's page count before quoting any figure from it. */
     --font-body:        var(--font-hebrew-override, "Oranburg Hebrew TNR"),
                         "Oranburg Hebrew Tinos",
                         "Times New Roman", Tinos, "Liberation Serif", Times, serif;

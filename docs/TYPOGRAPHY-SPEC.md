@@ -155,6 +155,10 @@ Times New Roman, measured from both binaries:
 Identical advance widths and identical line metrics mean identical line breaks
 and identical pagination. It is the same setting, not a substitute.
 
+Re-run `python3 tools/font_metrics.py` after any font update and check that the
+Tinos row still matches the Times row figure for figure. If it ever diverges,
+re-measure every page count built on the substitution before quoting one.
+
 **The identity is Tinos-to-Times only.** It protects no other face. A document
 set in Crimson Text, EB Garamond or Cardo gets nothing from it and will reflow
 completely if a build swaps its face. Check before assuming a pack is covered.
@@ -478,7 +482,9 @@ pointed and cantillated work, and `--font-hebrew-override` changes the Hebrew
 face in one line without touching the Latin. Two cautions are in the variables
 file: an override is only safe for text with no ta'amim, because Frank Ruhl
 Libre, David Libre and Heebo carry no cantillation glyphs at all; and it voids
-the Tinos pagination guarantee, so an overridden pack must be re-measured.
+the Tinos pagination guarantee. After setting one, run
+`python3 tools/font_metrics.py` and re-measure the pack's page count before
+quoting any figure from it.
 
 **Leading** is 1.5 in print and 1.7 on screen, because nikud sits below the
 baseline and ta'amim above it.
