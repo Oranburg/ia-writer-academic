@@ -176,7 +176,8 @@ edit followed by `python3 tools/build.py`.
 | `--font-ui` | Screen chrome only, never document text | Times New Roman |
 | `--font-mono` | Code, and the transaction box | Roboto Mono |
 | `--font-submission` | The Double-Spaced PDF, all of it | Times New Roman |
-| `"Oranburg Hebrew"` | Hebrew codepoints, body and headings | Times New Roman at `size-adjust: 111%` |
+| `"Oranburg Hebrew TNR"` | Hebrew codepoints, when Times is installed | Times New Roman at `size-adjust: 107.5%` |
+| `"Oranburg Hebrew Tinos"` | Hebrew codepoints, when it is not | Tinos, unscaled (already at the 0.90 norm) |
 | `"Oranburg Hebrew Accented"` | `.hebrew-block` only | Ezra SIL at `size-adjust: 88%` |
 
 Tinos sits second in `--font-body` so that a machine without Microsoft's fonts
@@ -192,20 +193,36 @@ roughly 84 em of that document is inter-block whitespace, about 14 vertical
 inches, about 1.5 full pages of a 7-page document. Heading air is the largest
 single item: 17 headings at about 2 em of leading space each.
 
-The old heading margins and their replacements:
+The heading margins, as settled by Seth's ruling of 2026-09-17 ("fix the
+heading spacing"). **Designed in points, stored in em.** An em in a heading's
+margin is that heading's own size, so a ladder designed directly in em lies
+about itself: the first version put 7.2pt above H4 and 5.5pt above H3, giving a
+subordinate level more air than its parent, and H1 at 22.4pt barely outranked
+H2 at 21.7pt.
 
-| Level | Was, margin-top | Now | Now, margin-bottom |
-|:--|--:|--:|--:|
-| H1 | 2.00em | **1.40em** | 0.30em |
-| H2 | 1.75em | **1.00em** | 0.25em |
-| H3 | 1.50em | **0.70em** | 0.20em |
-| H4 | 1.25em | **0.60em** | 0.15em |
-| H5 | 1.00em | **0.50em** | 0.15em |
-| H6 | 1.00em | **0.50em** | 0.15em |
+| Level | Size | Space above | Stored as | Space below |
+|:--|--:|--:|--:|--:|
+| H1 | 16pt | 28pt | 1.75em | 0.30em |
+| H2 | 14pt | 22pt | 1.57em | 0.25em |
+| H3 | 13pt | 8pt | 0.62em | 0.20em |
+| H4 | 12pt | 7pt | 0.58em | 0.15em |
+| H5 | 12pt | 6pt | 0.50em | 0.15em |
+| H6 | 11pt | 6pt | 0.55em | 0.15em |
+
+**Strictly decreasing**, so no level ever has more air above it than the level
+it belongs to. The one large step is H2 to H3, 22pt against 8pt, and it is
+deliberate: H2 and H3 differ by one point, 6.7%, at the same weight and case,
+which no reader registers. Size cannot carry that joint, because H2 cannot grow
+without crowding H1 and H3 cannot shrink without colliding with H4 at body size.
+So space carries it: a band of air reads as a section break, and a tight head
+reads as a division of what precedes it. Space also survives a photocopier.
 
 Butterick's rule is that space above and below is the most effective and most
-subtle way to mark a heading, which argues for keeping some; the page count
-argues for less. These values keep the signal and halve the cost.
+subtle way to mark a heading. The page-count budget argues for less of it, which
+is why H3 through H6 are tight; the H2 band is where the air is spent.
+
+Teaching Notes overrides all six values with a tighter set of its own (section
+10.7), so none of this reaches it.
 
 Two further economies, both specified in their own sections: blockquotes take a
 left indent only, never a symmetric one (section 6.3), and the Teaching Notes
@@ -234,28 +251,38 @@ than the first heading. The two are independent by design.
 
 ### 4.2 The ladder
 
-Against a 12pt body. Sizes follow Butterick: the smallest increment that shows,
-so the top of the ladder is 14pt and not 16pt.
+Against a 12pt body at 1.22 leading, all in Times New Roman.
 
-| Level | Size | Weight | Style | Case | Alignment |
+| Level | Size | Weight | Style | Case | What separates it from the level above |
 |:--|--:|--:|:--|:--|:--|
-| H1 | 14pt | 700 | roman | letterspaced caps, 0.04em | centered |
-| H2 | 13pt | 700 | roman | as typed | flush left |
-| H3 | 12pt | 700 | roman | as typed | flush left |
-| H4 | 12pt | 700 | *italic* | as typed | flush left |
-| H5 | 12pt | 400 | *italic* | as typed | flush left |
-| H6 | 12pt | 400 | *italic* | as typed | flush left, indented 0.25in |
+| H1 | 16pt | 700 | roman | as typed | size |
+| H2 | 14pt | 700 | roman | as typed | size |
+| H3 | 13pt | 700 | roman | as typed | **space** (section 3; one point is too little) |
+| H4 | 12pt | 700 | *italic* | as typed | style |
+| H5 | 12pt | 400 | *italic* | as typed | weight |
+| H6 | 11pt | 400 | roman | **capitals, tracked 0.085em**, grey | case, tracking, colour |
 
-Six levels, one family, distinguished by four devices. H6 is specified even
-though the library contains no hand-authored instance.
+Six levels, one family. Bold stops at H4; Times's bold is blunt and its italic is
+good, so italic and space carry the lower levels. H6 is the only level that is
+not roman or italic text at a size, and it is specified even though the library
+contains no hand-authored instance. Its grey measures #444444, dark enough to
+survive a photocopier, but case and tracking are the mechanism and the colour is
+a bonus.
+
+The document title (section 4.1) sets at 1.5em, centred. Law Review keeps its
+own legal outline (I / A / 1 / i / a) and sets its Part headings, H1, in
+letterspaced capitals rather than at 16pt, because capitals read larger.
 
 On screen the same ladder runs in em against the root size, so View > Font Size
-scales it, and the color hierarchy of section 12 applies.
+scales it, and the colour hierarchy of section 12 applies.
 
 ### 4.3 Small caps
 
-Law review convention sets Part headings in small caps. Crimson Text contains no
-small-cap glyphs, so `font-variant-caps: small-caps` gives synthesized ones.
+Law review convention sets Part headings in small caps. **Times New Roman has no
+`smcp` feature at all**, so `font-variant-caps: small-caps` gives synthesized
+ones in every renderer. The templates therefore use no small caps anywhere. The
+measurements below were taken on Crimson Text and EB Garamond, before the Times
+ruling, and they show what synthesis does to any face without drawn small caps.
 
 **Word is no better, and on one point it is worse.** OOXML defines
 `w:smallCaps` as displaying lowercase "as their capital letter character
@@ -282,8 +309,9 @@ it there. A synthesized one shows the same ratio as the capital, which is the
 signature of a pure linear scale with nothing compensated. The line then reads
 grey and slightly pinched while its opening capital looks too heavy.
 
-**Where the face has no `smcp`,** the templates set H1 in letterspaced full
-capitals at 92%, which is what a book does when small caps are unavailable.
+**Where the face has no `smcp`,** which under the Times ruling is always, the
+templates use real capitals, tracked: Law Review's Part headings, H6, and every
+running head. That is what a book does when small caps are unavailable.
 
 **Where the face has `smcp`,** the rule is:
 
@@ -334,7 +362,7 @@ with the heading. All six levels get this.
 
 | Element | Print | Screen |
 |:--|:--|:--|
-| Body paragraph | 12pt, 1.15 leading, first line indent 0.5in, no space between | 1rem, 1.6 leading, no indent, 1em between |
+| Body paragraph | 12pt, 1.22 leading, first line indent 0.5in, no space between | 1rem, 1.6 leading, no indent, 1em between |
 | First paragraph after any heading, blockquote, list, table, figure or page break | no indent | as above |
 | `.no-indent` | no indent | no indent |
 | Emphasis `*x*` | italic | italic |
@@ -357,7 +385,8 @@ shows no destination. The URL is not expanded; a citation supplies it.
 ### 6.1 Lists
 
 Unordered and ordered, nested to any depth. Markers: disc, then circle, then
-square; decimal, then lower-alpha, then lower-roman. Print leading 1.15,
+square; decimal, then lower-alpha, then lower-roman. Leading is the body's, 1.22,
+inherited rather than set,
 `li` bottom margin 0.15em, block margin 0.4em. A paragraph inside a list item
 takes no first-line indent.
 
@@ -450,7 +479,7 @@ sets at a different apparent size beside the same Latin. The right target is not
 actually use. Measured as alef height over the same font's own cap height, they
 agree closely:
 
-| Face | alef / cap | Correction to 0.900 |
+| Face | alef / cap | Correction it would need to reach 0.900 |
 |:--|--:|--:|
 | Noto Serif Hebrew | 0.906 | 99% |
 | Tinos | 0.904 | **none needed** |
@@ -460,8 +489,9 @@ agree closely:
 | **Times New Roman** | **0.837** | **107.5%** |
 | Heebo | 0.809 | 111% |
 
-Times New Roman is the outlier of the faces drawn for both scripts, and the only
-one in the stack that needs correcting. `"Oranburg Hebrew TNR"` applies
+That last column is a measurement, not a setting: it is what each face would
+need, and only the Times row is applied. Times New Roman is the outlier of the
+faces drawn for both scripts, and the only one in the stack that needs correcting. `"Oranburg Hebrew TNR"` applies
 `size-adjust: 107.5%` over the Hebrew codepoints alone; Latin is untouched.
 
 **Tinos is deliberately not scaled.** It already sits at 0.904, and scaling it
@@ -508,13 +538,13 @@ Paper comes from File > Page Setup. Top and bottom margins are
 
 | Template | Paper | Top | Bottom | Left | Right | Body | Leading |
 |:--|:--|--:|--:|--:|--:|--:|--:|
-| Law Review | Letter | 72pt | 72pt | 1.25in | 1.25in | 12pt | 1.15 |
-| Draft | Letter | 72pt | 72pt | 1in | 1in | 12pt | 1.15 |
+| Law Review | Letter | 72pt | 72pt | 1.25in | 1.25in | 12pt | 1.22 |
+| Draft | Letter | 72pt | 72pt | 1in | 1in | 12pt | 1.22 |
 | Double-Spaced | Letter | 72pt | 72pt | 1in | 1in | 12pt | 2.0 |
 | **Teaching Notes** | Letter | 40pt | 40pt | **1.3in** | **0.7in** | 11pt | 1.1 |
-| Executive | 7 x 10 | 54pt | 63pt | 0.9375in | 0.9375in | 12pt | 1.15 |
-| US Trade | 6 x 9 | 45pt | 54pt | 0.8125in | 0.8125in | 12pt | 1.15 |
-| Digest | 5.5 x 8.5 | 36pt | 45pt | 0.625in | 0.625in | 12pt | 1.15 |
+| Executive | 7 x 10 | 54pt | 63pt | 0.9375in | 0.9375in | 12pt | 1.22 |
+| US Trade | 6 x 9 | 45pt | 54pt | 0.8125in | 0.8125in | 12pt | 1.22 |
+| Digest | 5.5 x 8.5 | 36pt | 45pt | 0.625in | 0.625in | 12pt | 1.22 |
 
 The three book templates use a symmetric side margin and take their gutter
 from `tools/make_book.sh` after export; see the engineering notes.
