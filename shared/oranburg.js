@@ -148,11 +148,32 @@
         function (n) { return alpha(n).toLowerCase() + "."; }
     ];
 
+    /* The deck is a paragraph whose whole text is one <em>. The byline
+       is the short paragraph straight after the title or the deck.
+       Checked on text, not markup, so a body paragraph that merely
+       contains an italic phrase is never taken for either. */
+    function markFrontMatter(title) {
+        var p = title.nextElementSibling;
+        if (p && p.tagName === "P") {
+            var em = p.children.length === 1 ? p.children[0] : null;
+            if (em && em.tagName === "EM" &&
+                    em.textContent.trim() === p.textContent.trim()) {
+                p.classList.add("deck");
+                p = p.nextElementSibling;
+            }
+        }
+        if (p && p.tagName === "P" && p.children.length === 0 &&
+                p.textContent.trim().split(/\s+/).length <= 8) {
+            p.classList.add("byline");
+        }
+    }
+
     function markHeadings(root, legal) {
         var headings = root.querySelectorAll("h1, h2, h3, h4, h5, h6");
         var firstH1 = root.querySelector(":scope > h1");
         if (firstH1) {
             firstH1.classList.add("doc-title");
+            markFrontMatter(firstH1);
         }
         if (!legal) {
             return;
@@ -396,6 +417,26 @@
     }
 
     /* Driver ----------------------------------------------------------- */
+    /* Notes go under the author's Notes heading. iA Writer and pandoc
+       both append footnotes after everything else in the document, so
+       a source that writes "## Notes" and then "## Web sources" printed
+       an empty Notes heading over the web sources, and then the notes
+       themselves with no heading at all. Where the document has a
+       heading reading Notes or Endnotes, move the notes to sit directly
+       under it. Idempotent: iA Writer re-runs this on every change. */
+    function placeNotes(root) {
+        var notes = root.querySelector(".footnotes");
+        if (!notes) { return; }
+        var heads = root.querySelectorAll("h1, h2, h3");
+        var home = null;
+        each(heads, function (h) {
+            if (!home && /^\s*(end)?notes\s*$/i.test(h.textContent)) { home = h; }
+        });
+        if (!home || home.nextElementSibling === notes) { return; }
+        home.parentNode.insertBefore(notes, home.nextSibling);
+        notes.classList.add("notes-placed");
+    }
+
     function run() {
         var root = document.querySelector("[data-document]");
         if (root) {
@@ -409,6 +450,7 @@
                 markHebrew(root);
                 numberTOC(root);
                 warnOnSwallowedTitle(root);
+                placeNotes(root);
             } catch (e) {
                 if (window.console) { console.error("oranburg.js", e); }
             }

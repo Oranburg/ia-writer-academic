@@ -7,8 +7,14 @@
 </head>
 <!-- Running foot. Printed and exported pages only; turn on
      Settings > Templates > Printing & PDF Export > Footers.
-     Drawn inside IATemplateFooterHeight (Info.plist). -->
+     Drawn inside IATemplateFooterHeight (Info.plist).
+
+     The draft date on every page, so a marked copy that comes back
+     can be matched to its version at a glance. A reviewer once marked
+     a printout that turned out to be a different version from the text
+     of record, and it took a hand comparison of the headings to find
+     out. The title is already in the running head. -->
 <body>
-    <div class="footer-container">Draft</div>
+    <div class="footer-container">Draft of <span data-date>&nbsp;</span></div>
 </body>
 </html>

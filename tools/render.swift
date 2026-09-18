@@ -50,6 +50,14 @@ func page(_ key: String) -> URL? {
     return res.appendingPathComponent(n + ".html")
 }
 
+// Document identity for the running head, foot and title page. iA Writer
+// takes these from the document; the harness takes them from the
+// environment so a real document renders with its own title and date.
+let env = ProcessInfo.processInfo.environment
+let docTitle  = env["DOC_TITLE"]  ?? "A Synthetic Test Article"
+let docAuthor = env["DOC_AUTHOR"] ?? "Test Author"
+let docDate   = env["DOC_DATE"]   ?? "September 2026"
+
 var report = ""
 func log(_ s: String) { report += s + "\n"; print(s) }
 let pxPerPt: CGFloat = 96.0 / 72.0
@@ -230,7 +238,7 @@ func run() async {
         let top = titleUsesBands ? headerH : 0, bottom = titleUsesBands ? footerH : 0
         let tp = Page(width: paper.width * pxPerPt, height: (paper.height - top - bottom) * pxPerPt)
         await tp.load(t)
-        await tp.fill(classes: ["mac"], data: ["title": "A Synthetic Test Article", "author": "", "date": "September 2026", "page-count": "\(total)"])
+        await tp.fill(classes: ["mac"], data: ["title": docTitle, "author": docAuthor, "date": docDate, "page-count": "\(total)"])
         ctx.beginPDFPage(nil)
         draw(await tp.pdfOfView(), in: CGRect(x: 0, y: bottom, width: paper.width, height: paper.height - top - bottom))
         ctx.endPDFPage()
@@ -241,10 +249,12 @@ func run() async {
     let fp = Page(width: paper.width * pxPerPt, height: max(footerH, 1) * pxPerPt)
     if let h = page("IATemplateHeaderFile") { await hp.load(h) }
     if let f = page("IATemplateFooterFile") { await fp.load(f) }
-    for i in 0..<min(total, 8) {
+    // Every page. This was min(total, 8), which silently dropped the end
+    // of any real document: its notes, its sources, its last section.
+    for i in 0..<total {
         ctx.beginPDFPage(nil)
         if let pg = doc.page(at: i)?.pageRef { ctx.drawPDFPage(pg) }
-        let data = ["title": "A Synthetic Test Article", "author": "Test Author", "date": "September 2026",
+        let data = ["title": docTitle, "author": docAuthor, "date": docDate,
                     "page-number": "\(i + 1)", "page-count": "\(total)"]
         if page("IATemplateHeaderFile") != nil {
             await hp.fill(classes: ["mac"], data: data)
@@ -258,7 +268,7 @@ func run() async {
     }
     ctx.closePDF()
     if let c = PDFDocument(url: composedURL) {
-        for i in 0..<min(c.pageCount, 9) {
+        for i in 0..<c.pageCount {  // every page; was capped at 9
             let img = c.page(at: i)!.thumbnail(of: NSSize(width: paper.width * 1.5, height: paper.height * 1.5), for: .mediaBox)
             if let tiff = img.tiffRepresentation, let rep = NSBitmapImageRep(data: tiff),
                let png = rep.representation(using: .png, properties: [:]) {

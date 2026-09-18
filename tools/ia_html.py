@@ -38,6 +38,14 @@ def pandoc(text, fmt="markdown-smart"):
 def main():
     args = [a for a in sys.argv[1:] if not a.startswith("--")]
     keep_ids = "--ids" in sys.argv
+    # iA Writer does not convert straight quotes when it renders, so the
+    # default here does not either: a render should show what iA shows.
+    # --smart is for a one-off reading copy whose source has straight
+    # quotes, and the output then no longer matches iA Writer's.
+    # A reading copy also links its bare URLs, so they are clickable in
+    # the PDF and never hyphenated (see .url and a in oranburg-common.css).
+    fmt = ("markdown+smart+autolink_bare_uris" if "--smart" in sys.argv
+           else "markdown-smart")
     src = open(args[0], encoding="utf-8").read()
 
     # [#Key]: definitions
@@ -60,7 +68,7 @@ def main():
     src = re.sub(r"^\+\+\+$", "PAGEBREAKTOKEN", src, flags=re.M)
     src = re.sub(r"(?<!=)==(?=[^=\s])(.+?)(?<=[^=\s])==(?!=)", r"<mark>\1</mark>", src)
 
-    out = pandoc(src)
+    out = pandoc(src, fmt)
 
     # headings: collect for the TOC, strip ids
     heads = []
@@ -108,7 +116,7 @@ def main():
 
     cite_items = ""
     for k in order:
-        body = pandoc(defs[k]).strip()
+        body = pandoc(defs[k], fmt).strip()
         cite_items += ('\n<li id="fn%d" class="citation"><span class="citekey" style="display:none">'
                        '%s</span>%s\n</li>\n' % (num[k], html.escape(k), body))
     if notes or cite_items:

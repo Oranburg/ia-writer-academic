@@ -584,8 +584,12 @@ html#page-footer body {
 .header-left {
     overflow: hidden;
     text-overflow: ellipsis;
-    font-variant: small-caps;
-    letter-spacing: 0.03em;
+    /* Real capitals, tracked. This was font-variant: small-caps, which
+       in Times is scaled-down capitals with thinned strokes, in every
+       template's running head. Capitals read large, so a step down. */
+    text-transform: uppercase;
+    font-size: 0.92em;
+    letter-spacing: 0.08em;
 }
 
 .header-right {
@@ -729,6 +733,16 @@ blockquote.box-transaction {
    (Times has no `onum` either, so figures are lining. Nothing to
    be done about that in this family.)
    ========================================================= */
+/* An address is never hyphenated. Hyphenation treated "sefaria" in a
+   URL as a word and printed "sefari-a.org", which a reader typing it
+   from paper turns into a dead link. overflow-wrap: anywhere still lets
+   a long URL break to fit the measure, but without inserting a hyphen. */
+a, .url {
+    -webkit-hyphens: none;
+    hyphens: none;
+    overflow-wrap: anywhere;
+}
+
 /* Hyphenation breaks words far too eagerly at this measure:
    "liabili-ty" and "mani-festation" both appeared on one page. Require
    a longer word and more letters either side of the break. */
@@ -766,6 +780,23 @@ h6 { font-size: var(--print-h6-size); font-weight: 400; font-style: normal;
      margin: var(--space-h6) 0 0.15em;
      color: var(--color-muted); }
 h6::after { content: ""; margin-right: calc(-1 * var(--track-caps)); }
+
+/* Once placeNotes() has put the notes under their own heading, the
+   separator rule pandoc draws above them only repeats the heading. */
+.footnotes.notes-placed > hr { display: none; }
+
+/* Front matter under the title. oranburg.js marks a paragraph that
+   is wholly italic as the deck, and a short paragraph after it as the
+   byline. Both are centred and never take the paragraph indent, which
+   otherwise treats a byline as the second paragraph of the body. */
+p.deck, p.byline {
+    text-align: center;
+    text-indent: 0 !important;
+    -webkit-hyphens: none;
+    hyphens: none;
+}
+p.deck   { margin: 0.2em auto 0.35em; max-width: 34em; text-wrap: balance; }
+p.byline { margin: 0 0 1.6em; }
 
 /* The document title: the first H1, only when it is neither
    numbered nor a structural name. oranburg.js decides and adds
