@@ -249,6 +249,35 @@ that case is still usually a mistake.
 For PDF export the title page is `title.html`, which takes the file name rather
 than the first heading. The two are independent by design.
 
+### 4.0 Leading: declared and rendered
+
+**1.22 declared, 1.1875 rendered at 12pt. The house value is the rendered
+one**: 1.1875 of body, 19/16, 14.25pt at 12pt (Seth's ruling of 2026-09-17,
+"use 1.22", as resolved by the K session on 2026-09-18).
+
+WebKit computes a leading correctly and then lays lines out on whole CSS
+pixels, rounding down. Measured in WebKit with 21-line paragraphs:
+
+| Body | Declared | Computed | Line step | Rendered ratio |
+|:--|--:|--:|--:|--:|
+| 12pt (16px) | 1.15 | 18.40px | 18px | 1.1250 |
+| 12pt (16px) | 1.22 | 19.52px | 19px | **1.1875** |
+| 12pt (16px) | 1.25 | 20.00px | 20px | 1.2500 |
+| 11pt (14.67px) | 1.10 | 16.13px | 16px | 1.0909 |
+
+`122%` and `19.52px` floor identically, so the notation changes nothing. At
+12pt the only reachable steps are 19px and 20px.
+
+Seth judged the leading on a page this same engine rendered, so he approved
+1.1875, and iA Writer, which uses the same engine, prints exactly that. The
+comparison he was shown was really 1.125 against 1.1875, not 1.15 against 1.22.
+
+| Surface | How it carries 1.1875 |
+|:--|:--|
+| iA Writer (CSS) | `--line-height-body: 1.22`, which floors to 19px at 12pt. Do not write 1.1875: the floor differs by size (at 10pt, 1.22 gives 16px and 1.1875 gives 15px) |
+| Word | `w:line="285"` (1.1875 × 240). Word does not snap to pixels, so 293 would print a true 1.22, looser than the approved page |
+| Typst (Bar-Ilan pack) | By measured baseline step, 14.25pt at 12pt. Typst's line box runs from cap height to baseline, so its leading is not a ratio of anything CSS or Word uses |
+
 ### 4.2 The ladder
 
 Against a 12pt body at 1.22 leading, all in Times New Roman.

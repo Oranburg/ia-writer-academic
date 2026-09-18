@@ -278,7 +278,19 @@
        x-height at the same point size (0.447em against Crimson's
        0.424em), so its lines look heavier and want more room.
        1.22 is the low end of the usual range for Times at 12pt.
-       Moving this moves every page count downstream of it. */
+       Moving this moves every page count downstream of it.
+
+       1.22 DECLARED, 1.1875 RENDERED AT 12pt. WebKit computes the
+       leading correctly (19.52px at a 16px body) and then lays lines
+       out on whole CSS pixels, rounding DOWN: the step is 19px, and
+       19/16 = 1.1875, which is 14.25pt. Measured 2026-09-17 with
+       21-line paragraphs; 122% and 19.52px floor identically. Seth
+       chose the page this renders, so THE HOUSE VALUE IS THE RENDERED
+       ONE: 1.1875 of body, 14.25pt at 12pt (ruled by the K session,
+       2026-09-18). Word carries it as w:line 285 and Typst sets it by
+       measured baseline step. Leave this at 1.22 rather than writing
+       1.1875: the floor differs by size (at 10pt, 1.22 gives 16px and
+       1.1875 gives 15px), and 1.22 is what floors to 19px at 12pt. */
     --line-height-body:     1.22;
     --line-height-screen:   1.6;        /* More generous for on-screen reading */
     --line-height-double:   2.0;        /* Double-spaced reading copy */

@@ -21,7 +21,7 @@ def rpr(sz, bold=False, ital=False, caps=False, track=None, color=None):
     x += ['<w:sz w:val="%d"/>' % sz, '<w:szCs w:val="%d"/>' % sz]
     return '<w:rPr>' + ''.join(x) + '</w:rPr>'
 
-def ppr(before=None, after=0, line=293, jc=None, ind=None, keep=True):
+def ppr(before=None, after=0, line=285, jc=None, ind=None, keep=True):
     x = []                                      # ECMA-376 pPr order
     if keep: x += ['<w:keepNext/>', '<w:keepLines/>']
     sp = '<w:spacing'
@@ -33,21 +33,25 @@ def ppr(before=None, after=0, line=293, jc=None, ind=None, keep=True):
     if jc:  x.append('<w:jc w:val="%s"/>' % jc)
     return '<w:pPr>' + ''.join(x) + '</w:pPr>'
 
-# The general template: the iA ladder, 12pt at 1.22 (w:line 293; 240 is
-# single). Space in twentieths of a point, taken from the settled ladder in
+# The general template: the iA ladder, 12pt at the house leading, 1.1875
+# of body: w:line 285 (1.1875 x 240; 240 is single). Not 293: Word does not
+# snap to pixels, so 293 prints a true 1.22, looser than the page Seth chose,
+# which WebKit rendered at 19/16. See TYPOGRAPHY-SPEC section 4.0.
+#
+# Space in twentieths of a point, taken from the settled ladder in
 # docs/TYPOGRAPHY-SPEC.md section 3, which is designed in points:
 #   H1 28pt  H2 22pt  H3 8pt  H4 7pt  H5 6pt  H6 6pt   (strictly decreasing)
 # The first version of this table had 5pt above H3 and 7.2pt above H4, the
 # same inversion the iA ladder had before df1d153. Keep the two in step.
 ARTICLE = {
- 'Normal':   (ppr(after=0, line=293, keep=False),              rpr(24)),
- 'Title':    (ppr(before=0,   after=240, line=293, jc='center'), rpr(32, bold=True)),
- 'Heading1': (ppr(before=560, after=96,  line=293),            rpr(32, bold=True)),
- 'Heading2': (ppr(before=440, after=70,  line=293),            rpr(28, bold=True)),
- 'Heading3': (ppr(before=160, after=52,  line=293),            rpr(26, bold=True)),
- 'Heading4': (ppr(before=140, after=36,  line=293),            rpr(24, bold=True, ital=True)),
- 'Heading5': (ppr(before=120, after=36,  line=293),            rpr(24, ital=True)),
- 'Heading6': (ppr(before=120, after=33,  line=293),            rpr(22, caps=True, track=19, color='444444')),
+ 'Normal':   (ppr(after=0, line=285, keep=False),              rpr(24)),
+ 'Title':    (ppr(before=0,   after=240, line=285, jc='center'), rpr(32, bold=True)),
+ 'Heading1': (ppr(before=560, after=96,  line=285),            rpr(32, bold=True)),
+ 'Heading2': (ppr(before=440, after=70,  line=285),            rpr(28, bold=True)),
+ 'Heading3': (ppr(before=160, after=52,  line=285),            rpr(26, bold=True)),
+ 'Heading4': (ppr(before=140, after=36,  line=285),            rpr(24, bold=True, ital=True)),
+ 'Heading5': (ppr(before=120, after=36,  line=285),            rpr(24, ital=True)),
+ 'Heading6': (ppr(before=120, after=33,  line=285),            rpr(22, caps=True, track=19, color='444444')),
 }
 
 # The venue template. Journals want 12pt double-spaced with headings at
@@ -80,6 +84,11 @@ def retype(root, table):
         done.append(sid)
     # docDefaults: no theme font behind Normal
     s = re.sub(r'<w:rFonts w:asciiTheme="minorHAnsi"[^/]*/>', TNR, s)
+    # ...and no stray leading either. The default paragraph spacing is what
+    # any paragraph without a style of its own falls back to; it was 276
+    # (1.15). Make it the template's own body value, taken from Normal.
+    body_line = re.search(r'w:line="(\d+)"', table['Normal'][0]).group(1)
+    s = re.sub(r'(<w:docDefaults>.*?w:line=")\d+(")', r'\g<1>' + body_line + r'\2', s, count=1, flags=re.S)
     s = s.replace('<w:smallCaps/>', '')         # Word only ever fakes them
     st.write_text(s, encoding='utf-8')
 
