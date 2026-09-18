@@ -701,13 +701,33 @@ blockquote.box-transaction {
    docs/TYPOGRAPHY-SPEC.md section 4.
 
    ONE FAMILY sets every level. Levels are told apart by size,
-   weight, style, case, alignment and indent, never by changing
+   weight, style, case, tracking and space, never by changing
    family. Templates may override size and space; a template
    that changes font-family here is a bug.
 
-   Oswald is kept for the running head and footer alone, where a
-   condensed face earns its place fitting a title and a page
-   number on one line.
+   The family is Times New Roman, for the body and for all six
+   levels. That is Seth's ruling and it is what the running head
+   and folio use too; no condensed face survives anywhere.
+
+   Six levels in one face, and what separates each from the one
+   above it:
+
+     H1  16pt  bold                     size
+     H2  14pt  bold                     size
+     H3  13pt  bold                     size
+     H4  12pt  bold italic              style
+     H5  12pt  italic                   weight
+     H6  11pt  CAPITALS, tracked, muted case, tracking, colour
+
+   NO SMALL CAPS ANYWHERE. Times New Roman has no `smcp` feature
+   -- its whole GSUB is ccmp, dlig, liga, locl, rlig and the Arabic
+   joining forms -- so every renderer that shows small caps in
+   Times is scaling capitals down, which goes thin and wrong at
+   heading sizes. H6 and .part-heading use real capitals with
+   tracking instead. Do not add font-variant-caps here.
+
+   (Times has no `onum` either, so figures are lining. Nothing to
+   be done about that in this family.)
    ========================================================= */
 h1, h2, h3, h4, h5, h6 {
     font-family: var(--font-body);
@@ -720,10 +740,21 @@ h1, h2, h3, h4, h5, h6 {
 h1 { font-size: var(--print-h1-size); font-weight: 700; margin: var(--space-h1) 0 0.30em; }
 h2 { font-size: var(--print-h2-size); font-weight: 700; margin: var(--space-h2) 0 0.25em; }
 h3 { font-size: var(--print-h3-size); font-weight: 700; margin: var(--space-h3) 0 0.20em; }
-h4 { font-size: 1em; font-weight: 700; font-style: italic; margin: var(--space-h4) 0 0.15em; }
-h5 { font-size: 1em; font-weight: 400; font-style: italic; margin: var(--space-h5) 0 0.15em; }
-h6 { font-size: 1em; font-weight: 400; font-style: italic; margin: var(--space-h6) 0 0.15em;
-     padding-left: 0.25in; color: var(--color-muted); }
+h4 { font-size: var(--print-h4-size); font-weight: 700; font-style: italic;
+     margin: var(--space-h4) 0 0.15em; }
+h5 { font-size: var(--print-h5-size); font-weight: 400; font-style: italic;
+     margin: var(--space-h5) 0 0.15em; }
+
+/* The lowest level, and the only one that is not roman or italic
+   text at a size. Real capitals, tracked open so they do not set
+   as a block, and a step down in colour. Tracking on capitals
+   needs the trailing letter's space trimmed back or the line
+   looks indented from the right. */
+h6 { font-size: var(--print-h6-size); font-weight: 400; font-style: normal;
+     text-transform: uppercase; letter-spacing: var(--track-caps);
+     margin: var(--space-h6) 0 0.15em;
+     color: var(--color-muted); }
+h6::after { content: ""; margin-right: calc(-1 * var(--track-caps)); }
 
 /* The document title: the first H1, only when it is neither
    numbered nor a structural name. oranburg.js decides and adds

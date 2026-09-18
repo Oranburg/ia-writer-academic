@@ -15,76 +15,72 @@
 
 
 /* =========================================================
-   0. HEBREW AND ARAMAIC FALLBACK FACES
-   Crimson Text, Oswald and Roboto have no Hebrew glyphs.
-   These faces cover only the Hebrew blocks (unicode-range),
-   so Latin text still uses the brand fonts and Hebrew text,
-   with its nikud and ta'amei ha-miqra, uses the first
-   installed face that draws them.
+   0. HEBREW: TIMES, SCALED
 
-   Order of preference, and why. The first three place nikud
-   and cantillation correctly and are the only faces that do
-   so reliably; the next three place nikud well and ta'amim
-   poorly; the last two are macOS system faces and are the
-   floor. Conventions/hebrew-sources.md keeps ta'amim for
-   Tanakh on request and strips them by default, so nikud
-   placement is what decides most pages.
+   Seth sets everything in Times New Roman. Times draws its own
+   Hebrew, and draws it well: full ta'amei ha-miqra, 23 GPOS
+   MarkToBase and 4 MarkToMark lookups, which is the second-best
+   Hebrew engineering on this Mac behind Ezra SIL, a font that
+   does nothing else. So Hebrew needs no other family.
 
-     SBL Hebrew        free from sbl-site.org, manual install
-     Ezra SIL          brew install --cask font-ezra-sil
-     Taamey Frank CLM  Culmus project, manual install
-     Frank Ruhl Libre  brew install --cask font-frank-ruhl-libre
-     David Libre       brew install --cask font-david-libre
-     Noto Serif Hebrew brew install --cask font-noto-serif-hebrew
-     New Peninim MT    ships with macOS
-     Times New Roman   ships with macOS
+   It needs one correction. Times draws Hebrew small against its
+   own Latin -- alef 554 units where Cardo is 617, lamed 746
+   where Cardo is 919 -- so a verse set at the Latin's point size
+   reads light, and the ta'amim shrink with it. Seth reads the
+   accents for the sound, so that is the one thing not to lose.
 
-   Installing any one of the first three is the single
-   largest improvement available to a Hebrew page.
+   size-adjust scales the face itself, so the fix costs no markup
+   and no per-span overrides: Hebrew codepoints get Times at 111%,
+   Latin falls through to plain Times at 100%.
+
+   Faces deliberately NOT in this chain:
+     SBL Hebrew        not installed here, though older builds
+                       of this file asked for it first
+     Frank Ruhl Libre  no cantillation glyphs at all
+     David Libre       no cantillation, smallest alef of the set,
+                       and Seth prefers Times to it
+     Heebo             no cantillation; sans, and nothing here is sans
+
+   Ezra SIL remains available for a heavily accented block through
+   .hebrew-block in oranburg-common.css section 10. That switch
+   takes a whole element: split a word across two fonts and the
+   GPOS anchors stop matching, which detaches every mark.
    ========================================================= */
 @font-face {
-    font-family: "Oranburg Hebrew Serif";
-    src: local("SBL Hebrew"), local("SBLHebrew"),
-         local("Ezra SIL"), local("EzraSIL"),
-         local("Ezra SIL SR"),
-         local("Taamey Frank CLM"), local("TaameyFrankCLM-Medium"),
-         local("Frank Ruhl Libre"), local("FrankRuhlLibre-Regular"),
-         local("David Libre"), local("DavidLibre-Regular"),
-         local("Noto Serif Hebrew"), local("NotoSerifHebrew-Regular"),
-         local("New Peninim MT"), local("NewPeninimMT"),
+    font-family: "Oranburg Hebrew";
+    src: local("Times New Roman"), local("TimesNewRomanPSMT"),
+         local("Tinos"), local("Tinos-Regular");
+    size-adjust: 111%;
+    unicode-range: U+0590-05FF, U+FB1D-FB4F, U+200F, U+2135-2138;
+}
+
+@font-face {
+    font-family: "Oranburg Hebrew";
+    font-weight: 700;
+    src: local("Times New Roman Bold"), local("TimesNewRomanPS-BoldMT"),
+         local("Tinos Bold"), local("Tinos-Bold");
+    size-adjust: 111%;
+    unicode-range: U+0590-05FF, U+FB1D-FB4F, U+200F, U+2135-2138;
+}
+
+@font-face {
+    font-family: "Oranburg Hebrew";
+    font-style: italic;
+    src: local("Times New Roman Italic"), local("TimesNewRomanPS-ItalicMT"),
+         local("Tinos Italic"), local("Tinos-Italic");
+    size-adjust: 111%;
+    unicode-range: U+0590-05FF, U+FB1D-FB4F, U+200F, U+2135-2138;
+}
+
+/* The accented-passage face. Ezra SIL carries 52 GPOS lookups,
+   31 of them mark positioning and 8 mark-on-mark -- more than
+   triple what Times provides -- on 400 glyphs. It runs large, so
+   it is scaled down where Times is scaled up. */
+@font-face {
+    font-family: "Oranburg Hebrew Accented";
+    src: local("Ezra SIL"), local("EzraSIL"), local("Ezra SIL SR"),
          local("Times New Roman"), local("TimesNewRomanPSMT");
-    unicode-range: U+0590-05FF, U+FB1D-FB4F, U+200F, U+2135-2138;
-}
-
-@font-face {
-    font-family: "Oranburg Hebrew Serif";
-    font-weight: 700;
-    src: local("SBL Hebrew"), local("SBLHebrew"),
-         local("Ezra SIL B"), local("EzraSILB"),
-         local("Frank Ruhl Libre Bold"), local("FrankRuhlLibre-Bold"),
-         local("David Libre Bold"), local("DavidLibre-Bold"),
-         local("Noto Serif Hebrew Bold"), local("NotoSerifHebrew-Bold"),
-         local("New Peninim MT Bold"), local("NewPeninimMT-Bold"),
-         local("Times New Roman Bold"), local("TimesNewRomanPS-BoldMT");
-    unicode-range: U+0590-05FF, U+FB1D-FB4F, U+200F, U+2135-2138;
-}
-
-@font-face {
-    font-family: "Oranburg Hebrew Sans";
-    src: local("Arial Hebrew"), local("ArialHebrew"),
-         local("Noto Sans Hebrew"), local("NotoSansHebrew-Regular"),
-         local("Heebo"), local("Heebo-Regular"),
-         local("SBL Hebrew"), local("Times New Roman");
-    unicode-range: U+0590-05FF, U+FB1D-FB4F, U+200F, U+2135-2138;
-}
-
-@font-face {
-    font-family: "Oranburg Hebrew Sans";
-    font-weight: 700;
-    src: local("Arial Hebrew Bold"), local("ArialHebrew-Bold"),
-         local("Noto Sans Hebrew Bold"), local("NotoSansHebrew-Bold"),
-         local("Heebo Bold"), local("Heebo-Bold"),
-         local("Times New Roman Bold");
+    size-adjust: 88%;
     unicode-range: U+0590-05FF, U+FB1D-FB4F, U+200F, U+2135-2138;
 }
 
@@ -120,9 +116,19 @@
    2. FONT STACKS
    ========================================================= */
 :root {
-    --font-body:        "Oranburg Hebrew Serif", "Crimson Text", Georgia, "Times New Roman", serif;
-    --font-heading:     "Oranburg Hebrew Sans", "Oswald", "Helvetica Neue", Arial, sans-serif;
-    --font-ui:          "Oranburg Hebrew Sans", "Roboto", "Helvetica Neue", Arial, sans-serif;
+    /* One family, both scripts, every heading level. "Oranburg
+       Hebrew" is Times's own Hebrew scaled up (see section 0); it
+       must come first so the Hebrew range is claimed before the
+       plain Times entry below can answer for it.
+
+       Tinos is metric-compatible with Times New Roman to the unit
+       (n 500, m 778, M 889, I 333, identical hhea) and carries the
+       full ta'amim, so a Linux CI runner without Microsoft's fonts
+       paginates identically. Declare it; never reorder it above TNR. */
+    --font-body:        "Oranburg Hebrew", "Times New Roman", Tinos,
+                        "Liberation Serif", Times, serif;
+    --font-heading:     var(--font-body);
+    --font-ui:          "Oranburg Hebrew", "Times New Roman", Tinos, Times, serif;
     --font-mono:        "Roboto Mono", "SF Mono", Menlo, Consolas, "Courier New", monospace;
     --font-typewriter:  "Courier Prime", "Courier New", Courier, monospace;
 
@@ -253,17 +259,25 @@
    at the 12pt print body.
    ========================================================= */
 :root {
-    --print-h1-size:    1.1667em;   /* 14pt */
+    /* Six levels in ONE face have to separate on size, weight,
+       style, case, tracking and space alone, so the top three
+       are spread wider than they were when a second family was
+       carrying part of the work. */
+    --print-h1-size:    1.3333em;   /* 16pt */
     --print-h1-weight:  700;
 
-    --print-h2-size:    1.0833em;   /* 13pt */
+    --print-h2-size:    1.1667em;   /* 14pt */
     --print-h2-weight:  700;
 
-    --print-h3-size:    1em;        /* 12pt */
+    --print-h3-size:    1.0833em;   /* 13pt */
     --print-h3-weight:  700;
 
     --print-h4-size:    1em;        /* 12pt */
     --print-h4-weight:  700;
+
+    --print-h5-size:    1em;        /* 12pt */
+    --print-h6-size:    0.9167em;   /* 11pt, letterspaced capitals */
+    --track-caps:       0.085em;
 
     /* Space above each level. Halved from the old 2/1.75/1.5/1.25em,
        which cost about 1.5 pages of a 7-page teaching sheet. */

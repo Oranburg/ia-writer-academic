@@ -33,7 +33,7 @@
 	<key>IATemplateSupportsDiffHTML</key>
 	<false/>
 	<key>IATemplateDescription</key>
-	<string>Bluebook-compliant law review manuscript with legal outline numbering. Oranburg Style: Crimson Text body, Oswald headings, color hierarchy on screen, all-black print.</string>
+	<string>Bluebook-compliant law review manuscript with legal outline numbering. Oranburg Style: Times New Roman throughout, hierarchy by size and style, color on screen, all-black print.</string>
 	<key>IATemplateAuthor</key>
 	<string>Seth C. Oranburg</string>
 	<key>IATemplateAuthorURL</key>

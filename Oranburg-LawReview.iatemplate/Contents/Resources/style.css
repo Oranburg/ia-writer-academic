@@ -4,7 +4,7 @@
 
    Bluebook-compliant law review manuscript.
    Legal outline numbering (I -> A -> 1 -> i -> a).
-   Screen: color headings, Crimson Text/Oswald.
+   Screen: color headings, Times New Roman throughout.
    Print:  all black, 8.5x11, 1.15 spacing,
            1in top and bottom, 1.25in left and right.
 
@@ -121,9 +121,9 @@ blockquote p { text-indent: 0; margin-bottom: 0.5em; }
 /* =========================================================
    5. LEGAL OUTLINE HEADINGS
 
-   # (H1)   I, II, III     Oswald Bold, large
-   ## (H2)   A, B, C        Oswald SemiBold
-   ### (H3)  1, 2, 3        Oswald Regular, italic
+   # (H1)   I, II, III     Times Bold, 16pt
+   ## (H2)   A, B, C        Times Bold, 14pt
+   ### (H3)  1, 2, 3        Times Bold, 13pt
    #### (H4) i, ii, iii     Body font italic
    ##### (H5) a, b, c       Body font, indented
    ========================================================= */
@@ -140,14 +140,15 @@ h1, h2, h3, h4, h5, h6 {
 
 /* --- H1: Roman Numeral Parts --- */
 h1 {
-    font-size: var(--print-h1-size);
     font-weight: 700;
-    /* Crimson Text draws no small caps, so WebKit would fake them and
-       thin the strokes. Letterspaced capitals at 92% instead, which is
-       what a book does when small caps are unavailable.
+    /* Times New Roman has no smcp feature, so WebKit would fake small
+       caps by scaling capitals and thinning the strokes. Letterspaced
+       real capitals instead, which is what a book does when small caps
+       are unavailable. Set smaller than --print-h1-size because
+       capitals read larger than lowercase at the same size.
        docs/TYPOGRAPHY-SPEC.md section 4.3. */
     text-transform: uppercase;
-    font-size: 1.0733em;
+    font-size: 1.0733em;      /* 12.9pt */
     text-align: left;
     letter-spacing: 0.055em;
     margin-top: var(--space-h1);
@@ -260,10 +261,10 @@ h2[id^="acknowledg" i]::before,
 }
 
 /* --- H3: Decimal Subsections ---
-   Set in the body serif, not in Oswald. Oswald ships a weight
-   axis and no italic, so an italic heading in it is a synthetic
-   oblique that WebKit slants by shear. Crimson Text has a drawn
-   italic. */
+   Bold italic rather than the ladder's bold roman, because this
+   template carries the law review outline (I / A / 1 / a / i) and
+   the numbering, not the face, is doing the ranking. Times has a
+   drawn italic, so nothing here is synthetic. */
 h3 {
     font-family: var(--font-body);
     font-size: 1.0833em;        /* 13pt */
@@ -453,7 +454,7 @@ h2[id="contents" i] + ul a {
     margin-bottom: 0.5em;
 }
 
-/* Footnote reference: small Oswald figure */
+/* Footnote reference: small figure, same family as everything else */
 sup {
     font-family: var(--font-heading);
     font-size: 0.7083em;    /* 8.5pt at 12pt body */
