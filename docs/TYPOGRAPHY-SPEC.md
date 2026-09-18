@@ -80,45 +80,104 @@ strokes lighter than the capitals beside them.
 
 | Family | Styles available | Weights | Real italic | Real small caps | Hebrew |
 |:--|:--|:--|:--|:--|:--|
-| Crimson Text | 6 static | 400, 600, 700 | yes | **no** | no |
-| Crimson Pro | variable + italic | 200 to 900 | yes | **no** | no |
-| Oswald | variable | 200 to 700 | **no** | **no** | no |
+| **Times New Roman** | 4 static | 400, 700 | yes | **no** | **yes, with cantillation** |
+| **Tinos** | 4 static | 400, 700 | yes | **no** | **yes, with cantillation** |
+| Ezra SIL | 2 static | 400, 700 | no | no | yes, best in class |
+| Cardo | 1 finished, 2 unfinished | 400, 700 | 0.99, unfinished | yes, Regular only | yes, no mark stacking |
 | EB Garamond | static + SC families | 400, 500, 600, 700 | yes | **yes** (`smcp`, `c2sc`) | no |
-| Cardo | 3 static | 400, 700 | yes | **yes** | yes, with cantillation |
+| Crimson Text | 6 static | 400, 600, 700 | yes | **no** | no |
+| Oswald | variable | 200 to 700 | **no** | **no** | no |
 | Roboto | variable | 100 to 900 | yes | yes | no |
-| Times New Roman | 4 static | 400, 700 | yes | no | yes, with cantillation |
 
-Two consequences govern the rest of this file.
+**The ruling, 2026-09-17: Times New Roman sets everything.** Body text, all six
+heading levels, running heads and folios. Seth's words: "Let's go with Times New
+Roman for everything." Nothing in document text is condensed, sans, or another
+serif.
 
-**Oswald cannot support a full heading ladder.** It has no italic, so it cannot
-express the subordinate levels that legal and scholarly convention sets in
-italic, and it has no small caps. It is a condensed display grotesque, and it is
-at its best large or in a running head where condensation is a virtue.
+Three consequences govern the rest of this file.
 
-**Small caps require a face that draws them.** Crimson Text does not. This is
-not an iA Writer limitation: Word synthesizes for the same font, for the same
-reason. Verified by rendering both in WebKit, the engine iA Writer uses.
+**One family sets all six heading levels.** Levels are distinguished by size,
+weight, style, case, tracking and space, never by changing family. This is the
+standing rule; it was broken twice in earlier drafts of these templates and it
+is stated here so it is not broken again. Section 4 gives the ladder.
 
-### 2.1 The variables
+**No small caps anywhere.** Times New Roman has no `smcp` feature; its whole
+GSUB is `ccmp`, `dlig`, `liga`, `locl`, `rlig` and the Arabic joining forms. So
+every renderer that appears to show small caps in Times is scaling capitals and
+thinning them. H6 and `.part-heading` use real capitals with tracking instead.
+This is not an iA Writer limitation: Word synthesizes for the same font for the
+same reason. Times has no `onum` either, so figures are lining.
+
+**Hebrew comes from the same family, scaled.** Times carries full ta'amei
+ha-miqra with 23 GPOS MarkToBase and 4 MarkToMark lookups, second on this Mac
+only to Ezra SIL. Section 9 has the detail and the one correction it needs.
+
+
+### 2.1 Two contexts, two answers
+
+The ruling names one face, but "Times New Roman" is not followable everywhere,
+so the templates have to say which context takes which. The distinction is
+about **redistribution**, not about rendering.
+
+| Context | Face | Why |
+|:--|:--|:--|
+| This Mac: iA Writer, Word, any PDF exported by an application | **Times New Roman** | Installed at `/System/Library/Fonts/Supplemental/`. Correct, and what Seth proofs against. |
+| Any repository that vendors font files and builds its own PDFs | **Tinos, vendored** | Times New Roman must never enter the build. |
+
+**Times New Roman cannot be copied into a repository.** It is Monotype's,
+licensed through the system or through Office, and its name table defers to that
+EULA. Vendoring the `.ttf` is redistribution and is not permitted.
+
+Note what this does *not* say. Embedding is a different act from vendoring, and
+the font itself permits it: Times New Roman's `fsType` is `0x0008`, Editable
+Embedding, the most permissive non-zero value in the specification. A PDF that
+Word or iA Writer exports with a Times subset inside it is fine. What is barred
+is shipping the font file so a build can read it, and a build that instead reads
+it off whatever machine is running loses reproducibility on every machine, not
+only on Linux.
+
+**Tinos is the face in that context, not a fallback.** `fsType` `0x0000`,
+Installable Embedding, no restriction, under the **SIL Open Font License 1.1**
+(version 1.340, the copy installed here; earlier Chrome OS releases were
+Apache-2.0, so check the copy you vendor and carry its own licence file). The
+OFL's Reserved Font Name clause applies if it is ever modified.
+
+What makes the substitution safe is measurement rather than resemblance. Against
+Times New Roman, measured from both binaries:
+
+| | Times New Roman | Tinos |
+|:--|--:|--:|
+| advance `n` / `o` / `m` / `e` / space | 500 / 500 / 778 / 444 / 250 | 500 / 500 / 778 / 444 / 250 |
+| advance `M` / `I` | 889 / 333 | 889 / 333 |
+| `hhea` ascent / descent / line gap | 1825 / -443 / 87 | 1825 / -443 / 87 |
+| ta'amim coverage | full, `mark` + `mkmk` | full, `mark` + `mkmk` |
+
+Identical advance widths and identical line metrics mean identical line breaks
+and identical pagination. It is the same setting, not a substitute.
+
+**The identity is Tinos-to-Times only.** It protects no other face. A document
+set in Crimson Text, EB Garamond or Cardo gets nothing from it and will reflow
+completely if a build swaps its face. Check before assuming a pack is covered.
+
+
+### 2.2 The variables
 
 All of this is set in `shared/oranburg-variables.css`. Changing a family is one
 edit followed by `python3 tools/build.py`.
 
 | Variable | Role | Value |
 |:--|:--|:--|
-| `--font-body` | Body text, and every heading level | Crimson Text |
-| `--font-heading` | Running heads and footers only | Oswald |
-| `--font-ui` | Screen chrome only, never document text | Roboto |
+| `--font-body` | Body text, and every heading level | Times New Roman, then Tinos |
+| `--font-heading` | Running heads and footers | `var(--font-body)` |
+| `--font-ui` | Screen chrome only, never document text | Times New Roman |
 | `--font-mono` | Code, and the transaction box | Roboto Mono |
 | `--font-submission` | The Double-Spaced PDF, all of it | Times New Roman |
-| `--font-hebrew-serif` | Hebrew inside body text | see section 9 |
-| `--font-hebrew-sans` | Hebrew inside running heads | see section 9 |
-| `--font-hebrew-taamim` | Any element that includes cantillation | see section 9 |
+| `"Oranburg Hebrew"` | Hebrew codepoints, body and headings | Times New Roman at `size-adjust: 111%` |
+| `"Oranburg Hebrew Accented"` | `.hebrew-block` only | Ezra SIL at `size-adjust: 88%` |
 
-**One family sets all six heading levels.** Levels are distinguished by size,
-weight, style, case, alignment and indentation, never by changing family. This
-is the standing rule; it was broken twice in earlier drafts of these templates
-and it is stated here so it is not broken again.
+Tinos sits second in `--font-body` so that a machine without Microsoft's fonts
+paginates identically. Never reorder it above Times New Roman on the Mac, and
+never let a build reach past it to Times.
 
 
 ## 3. Vertical space, the page-count budget
@@ -382,22 +441,44 @@ what belongs here is the type.
 Hebrew is set right to left and flush right, and is never justified.
 
 **Size.** Hebrew has no ascender or descender to align against, so each face
-sets at a different apparent size beside the same Latin. The Hebrew is scaled so
-its alef matches the Latin cap height. Crimson Text's cap measures 0.6465 em.
+sets at a different apparent size beside the same Latin. The right target is not
+"alef equals cap height" but the proportion that faces drawn for both scripts
+actually use. Measured as alef height over the same font's own cap height, they
+agree closely:
 
-| Face | Alef height | Scale against Crimson Text |
+| Face | alef / cap | Correction to 0.900 |
 |:--|--:|--:|
-| Ezra SIL | 0.7051 em | 92% |
-| Noto Serif Hebrew | 0.6470 em | 100% |
-| Cardo | 0.6172 em | 105% |
-| Tinos | 0.5918 em | 109% |
-| Frank Ruhl Libre | 0.5900 em | 110% |
-| Heebo | 0.5752 em | 112% |
-| Noto Sans Hebrew | 0.5840 em | 111% |
-| Times New Roman | 0.5542 em | 117% |
-| David Libre | 0.5278 em | 122% |
-| Arial Hebrew | 0.5180 em | 125% |
-| New Peninim MT | 0.4980 em | 130% |
+| Noto Serif Hebrew | 0.906 | 99% |
+| Tinos | 0.904 | **none needed** |
+| Cardo | 0.897 | 100% |
+| Frank Ruhl Libre | 0.894 | 101% |
+| David Libre | 0.859 | 105% |
+| **Times New Roman** | **0.837** | **107.5%** |
+| Heebo | 0.809 | 111% |
+
+Times New Roman is the outlier of the faces drawn for both scripts, and the only
+one in the stack that needs correcting. `"Oranburg Hebrew TNR"` applies
+`size-adjust: 107.5%` over the Hebrew codepoints alone; Latin is untouched.
+
+**Tinos is deliberately not scaled.** It already sits at 0.904, and scaling it
+would break the metric identity that is the entire reason it is in the stack.
+The two are therefore separate `@font-face` families, not one rule with one
+number: Hebrew resolves to Times if installed, else Tinos. Getting this wrong
+is easy and invisible on the Mac, because Times always wins there and the
+Tinos path is only exercised on a machine that has no Microsoft fonts.
+
+**The correction is about letters, not marks.** Times draws its Hebrew *letters*
+small relative to its own Latin, whether or not they are pointed. Unpointed
+Israeli legal Hebrew is undersized in Times by exactly the same 7.5%. The
+accents are why Seth notices, not why the correction exists.
+
+**Declaring a different face.** Consistency is not appropriateness. A pack of
+unpointed modern statute for Israeli students is a different job from Seth's own
+pointed and cantillated work, and `--font-hebrew-override` changes the Hebrew
+face in one line without touching the Latin. Two cautions are in the variables
+file: an override is only safe for text with no ta'amim, because Frank Ruhl
+Libre, David Libre and Heebo carry no cantillation glyphs at all; and it voids
+the Tinos pagination guarantee, so an overridden pack must be re-measured.
 
 **Leading** is 1.5 in print and 1.7 on screen, because nikud sits below the
 baseline and ta'amim above it.

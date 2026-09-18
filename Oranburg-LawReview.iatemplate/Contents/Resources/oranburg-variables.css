@@ -6,8 +6,12 @@
    Palette: Catholic University of America brand
             (brand.catholic.edu/color): Catholic Blue #0A3255
             and Catholic Red #B21F2C carry the visual weight.
-   Fonts:   Crimson Text (body), Oswald (headings),
-            Roboto (UI), Roboto Mono (code).
+   Fonts:   Times New Roman throughout -- body, all six heading
+            levels, running heads and folios. Tinos is its
+            metric-identical twin for builds that cannot ship
+            Microsoft's font. Roboto Mono for code alone.
+            Seth's ruling, 2026-09-17. See docs/TYPOGRAPHY-SPEC.md
+            section 2.1 for which context takes which face.
 
    This file is the single source. tools/build.py copies it
    into every .iatemplate bundle, because iA Writer copies a
@@ -47,29 +51,54 @@
    takes a whole element: split a word across two fonts and the
    GPOS anchors stop matching, which detaches every mark.
    ========================================================= */
+/* Two families, not one, because Times and Tinos need different
+   corrections and a single rule could only carry one number.
+
+   Measured alef height against the same font's cap height. Faces
+   drawn for both scripts cluster tightly:
+
+     Noto Serif Hebrew  0.906      Cardo              0.897
+     Tinos              0.904      Frank Ruhl Libre   0.894
+     ------------------------ the designed norm is ~0.90 --------
+     David Libre        0.859      TIMES NEW ROMAN    0.837
+
+   Times is the outlier and the only one needing correction:
+   0.900 / 0.837 = 1.075. Tinos already sits at 0.904 and must be
+   left alone -- scaling it would also break the metric identity
+   that is the whole reason it is in the stack.
+
+   So Hebrew resolves in this order: Times if installed, else
+   Tinos. Latin falls past both to the plain families below. */
 @font-face {
-    font-family: "Oranburg Hebrew";
-    src: local("Times New Roman"), local("TimesNewRomanPSMT"),
-         local("Tinos"), local("Tinos-Regular");
-    size-adjust: 111%;
+    font-family: "Oranburg Hebrew TNR";
+    src: local("Times New Roman"), local("TimesNewRomanPSMT");
+    size-adjust: 107.5%;
     unicode-range: U+0590-05FF, U+FB1D-FB4F, U+200F, U+2135-2138;
 }
-
 @font-face {
-    font-family: "Oranburg Hebrew";
+    font-family: "Oranburg Hebrew TNR";
     font-weight: 700;
-    src: local("Times New Roman Bold"), local("TimesNewRomanPS-BoldMT"),
-         local("Tinos Bold"), local("Tinos-Bold");
-    size-adjust: 111%;
+    src: local("Times New Roman Bold"), local("TimesNewRomanPS-BoldMT");
+    size-adjust: 107.5%;
+    unicode-range: U+0590-05FF, U+FB1D-FB4F, U+200F, U+2135-2138;
+}
+@font-face {
+    font-family: "Oranburg Hebrew TNR";
+    font-style: italic;
+    src: local("Times New Roman Italic"), local("TimesNewRomanPS-ItalicMT");
+    size-adjust: 107.5%;
     unicode-range: U+0590-05FF, U+FB1D-FB4F, U+200F, U+2135-2138;
 }
 
 @font-face {
-    font-family: "Oranburg Hebrew";
-    font-style: italic;
-    src: local("Times New Roman Italic"), local("TimesNewRomanPS-ItalicMT"),
-         local("Tinos Italic"), local("Tinos-Italic");
-    size-adjust: 111%;
+    font-family: "Oranburg Hebrew Tinos";
+    src: local("Tinos"), local("Tinos-Regular");
+    unicode-range: U+0590-05FF, U+FB1D-FB4F, U+200F, U+2135-2138;
+}
+@font-face {
+    font-family: "Oranburg Hebrew Tinos";
+    font-weight: 700;
+    src: local("Tinos Bold"), local("Tinos-Bold");
     unicode-range: U+0590-05FF, U+FB1D-FB4F, U+200F, U+2135-2138;
 }
 
@@ -126,10 +155,30 @@
        (n 500, m 778, M 889, I 333, identical hhea) and carries the
        full ta'amim, so a Linux CI runner without Microsoft's fonts
        paginates identically. Declare it; never reorder it above TNR. */
-    --font-body:        "Oranburg Hebrew", "Times New Roman", Tinos,
-                        "Liberation Serif", Times, serif;
+    /* DECLARING A DIFFERENT HEBREW FACE.
+       Consistency is not appropriateness. Seth's own print work
+       is pointed and often cantillated, and Times is right for
+       it. A pack of unpointed modern Israeli statute read by
+       Israeli law students is a different job, and the face
+       designed for continuous reading in that language wins.
+
+       Set --font-hebrew-override in the template's own :root and
+       Hebrew changes without touching the Latin:
+
+           :root { --font-hebrew-override: "Frank Ruhl Libre"; }
+
+       That face must come first in the stack, so declare it as a
+       family that covers the Hebrew range. Two cautions. It only
+       makes sense for text with no ta'amim, because Frank Ruhl
+       Libre, David Libre and Heebo carry no cantillation glyphs
+       at all. And it breaks the Tinos metric identity: only
+       Tinos-for-Times leaves pagination unchanged, so a pack that
+       overrides the face must be re-measured, not assumed. */
+    --font-body:        var(--font-hebrew-override, "Oranburg Hebrew TNR"),
+                        "Oranburg Hebrew Tinos",
+                        "Times New Roman", Tinos, "Liberation Serif", Times, serif;
     --font-heading:     var(--font-body);
-    --font-ui:          "Oranburg Hebrew", "Times New Roman", Tinos, Times, serif;
+    --font-ui:          var(--font-body);
     --font-mono:        "Roboto Mono", "SF Mono", Menlo, Consolas, "Courier New", monospace;
     --font-typewriter:  "Courier Prime", "Courier New", Courier, monospace;
 
@@ -218,7 +267,12 @@
    12pt print body so print output is unchanged.
    ========================================================= */
 :root {
-    --line-height-body:     1.15;
+    /* 1.15 was chosen for Crimson Text. Times sets a LARGER
+       x-height at the same point size (0.447em against Crimson's
+       0.424em), so its lines look heavier and want more room.
+       1.22 is the low end of the usual range for Times at 12pt.
+       Moving this moves every page count downstream of it. */
+    --line-height-body:     1.22;
     --line-height-screen:   1.6;        /* More generous for on-screen reading */
     --line-height-double:   2.0;        /* Double-spaced reading copy */
     --line-height-footnote: 1.2;
