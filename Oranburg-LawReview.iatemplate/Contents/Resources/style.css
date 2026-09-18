@@ -351,7 +351,6 @@ h2[id="contents" i] + ul > li {
 h2.contents-heading + ul > li::before,
 h2[id="contents" i] + ul > li::before {
     content: counter(toc1, upper-roman) ". ";
-    font-variant: small-caps;
     font-family: var(--font-heading);
     margin-right: 0.4em;
 }

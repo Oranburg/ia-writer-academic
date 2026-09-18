@@ -12,10 +12,9 @@
    1. Heading margins halved (oranburg-variables.css section 7),
       and halved again here. A prep sheet runs 17 or 18 headings
       in 5 pages, so heading air was the largest single cost.
-   2. H3 is a sidehead, run into the text beside it. A sheet's
-      H3 level is a run of statutory sections, each introducing
-      three to six quoted lines, and each was costing a full
-      line of its own plus its leading.
+   2. (Withdrawn 2026-09-18.) H3 used to run in as a side head.
+      It saved a line per section but gave the page a left edge
+      that moved four times; see section 2 below.
    3. Blockquotes take a left indent only. A symmetric 0.5in
       indent cost an inch of measure, which turned three quoted
       lines into five.
@@ -90,7 +89,7 @@ body > :first-child { margin-top: 0; padding-top: 0; }
    2. HEADINGS
    The ladder is oranburg-common.css section 15: one family,
    six levels, told apart by size, weight and style. This file
-   changes only spacing, color, and the H3 sidehead.
+   changes only spacing and color.
    ========================================================= */
 h1 {
     color: var(--color-h1);
@@ -109,34 +108,24 @@ h3 {
 h4, h5 { color: var(--color-h4); }
 h6 { color: var(--color-muted); }
 
-/* --- The sidehead.
-   In print an H3 and the paragraph or quotation after it share a
-   line: "§ 36 — Methods of Termination   Any offer may be..."
-   A run of ten statutory sections then costs ten lines instead
-   of twenty-five. On screen they stay stacked, because Preview
-   is for editing and the run-in is harder to scan there. */
+/* --- H3 runs full width, like every other level.
+   It used to float into the left margin as a side head, run in beside
+   its first paragraph. That was one rung of six: H2, H4, H5 and H6
+   stayed full width, so the text's left edge moved four times down a
+   page and an H4 sat wider than its own parent H3. A page read from a
+   lectern needs one stable left edge, and a 7-page sheet with one is
+   teachable where a 5-page sheet without one is not a saving.
+   Determined by the K session, 2026-09-18, which Seth put in charge of
+   final style decisions.
+
+   The designed target is a real marginal-head column -- H3, H4 and the
+   drafting notes all in the margin, the text block on one unbroken edge
+   -- built to the Bar-Ilan pack's marginalia geometry (12mm gutter,
+   55mm note column, 22mm head and foot) so the two teaching formats
+   agree. That is a second pass. Do not bring back a single floated
+   level on its own. */
 @media print {
-    h3 {
-        float: left;
-        margin: 0.45em 0.5em 0 0;
-        max-width: 42%;
-        font-style: normal;
-    }
-
-    h3 + p,
-    h3 + blockquote,
-    h3 + ul,
-    h3 + ol {
-        overflow: hidden;      /* sit beside the float, not under it */
-    }
-
-    h3 + blockquote {
-        margin-top: 0.45em;
-    }
-
-    /* A float cannot straddle a page break cleanly, so keep the
-       sidehead with what follows it. */
-    h3 { page-break-inside: avoid; break-inside: avoid; }
+    h3 { page-break-after: avoid; break-after: avoid; }
 }
 
 

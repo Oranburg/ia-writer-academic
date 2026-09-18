@@ -78,7 +78,26 @@ h6 { color: var(--color-muted); }
         color: var(--black) !important;
     }
 
-    h1 { font-size: 13pt; font-weight: bold; text-transform: uppercase; }
+    /* The venue ladder. A submission is 12pt double-spaced with every
+       heading at body size, so size is not available and each rung
+       changes something else. This matches the installed Word template
+       Oranburg Submission.dotx rung for rung: same venue, and the two
+       must agree. H2 was font-variant: small-caps, which Times cannot
+       draw, so WebKit printed a large L over shrunken capitals. */
+    h1, h2, h3, h4, h5, h6 {
+        font-size: 12pt;
+        font-variant: normal;
+        letter-spacing: normal;
+        text-transform: none;
+        padding-left: 0;
+    }
+    h1 { font-weight: bold; text-transform: uppercase; letter-spacing: 0.08em; text-align: center; }
+    h2 { font-weight: bold; font-style: normal; }
+    h3 { font-weight: bold; font-style: italic; }
+    h4 { font-weight: normal; font-style: italic; }
+    h5 { font-weight: normal; font-style: italic; padding-left: 0.5in; }
+    h6 { font-weight: normal; font-style: normal; text-transform: uppercase;
+         letter-spacing: 0.08em; padding-left: 0.5in; }
 
     body > h1:first-of-type {
         font-size: 14pt;
@@ -86,10 +105,6 @@ h6 { color: var(--color-muted); }
         letter-spacing: 0.03em;
         margin-top: 0;
     }
-
-    h2 { font-size: 12pt; font-weight: bold; font-variant: small-caps; }
-    h3 { font-size: 12pt; font-weight: bold; font-style: italic; }
-    h4 { font-size: 12pt; font-weight: normal; font-style: italic; }
 }
 
 
