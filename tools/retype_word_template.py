@@ -33,16 +33,21 @@ def ppr(before=None, after=0, line=293, jc=None, ind=None, keep=True):
     if jc:  x.append('<w:jc w:val="%s"/>' % jc)
     return '<w:pPr>' + ''.join(x) + '</w:pPr>'
 
-# The general template: the iA ladder, 12pt at 1.22. Space in 20ths of a point.
+# The general template: the iA ladder, 12pt at 1.22 (w:line 293; 240 is
+# single). Space in twentieths of a point, taken from the settled ladder in
+# docs/TYPOGRAPHY-SPEC.md section 3, which is designed in points:
+#   H1 28pt  H2 22pt  H3 8pt  H4 7pt  H5 6pt  H6 6pt   (strictly decreasing)
+# The first version of this table had 5pt above H3 and 7.2pt above H4, the
+# same inversion the iA ladder had before df1d153. Keep the two in step.
 ARTICLE = {
  'Normal':   (ppr(after=0, line=293, keep=False),              rpr(24)),
  'Title':    (ppr(before=0,   after=240, line=293, jc='center'), rpr(32, bold=True)),
- 'Heading1': (ppr(before=336, after=72,  line=293),            rpr(32, bold=True)),
- 'Heading2': (ppr(before=372, after=60,  line=293),            rpr(28, bold=True)),
- 'Heading3': (ppr(before=101, after=48,  line=293),            rpr(26, bold=True)),
- 'Heading4': (ppr(before=144, after=36,  line=293),            rpr(24, bold=True, ital=True)),
+ 'Heading1': (ppr(before=560, after=96,  line=293),            rpr(32, bold=True)),
+ 'Heading2': (ppr(before=440, after=70,  line=293),            rpr(28, bold=True)),
+ 'Heading3': (ppr(before=160, after=52,  line=293),            rpr(26, bold=True)),
+ 'Heading4': (ppr(before=140, after=36,  line=293),            rpr(24, bold=True, ital=True)),
  'Heading5': (ppr(before=120, after=36,  line=293),            rpr(24, ital=True)),
- 'Heading6': (ppr(before=120, after=36,  line=293),            rpr(22, caps=True, track=19, color='444444')),
+ 'Heading6': (ppr(before=120, after=33,  line=293),            rpr(22, caps=True, track=19, color='444444')),
 }
 
 # The venue template. Journals want 12pt double-spaced with headings at
