@@ -51,8 +51,8 @@
     /* Tighter than the article templates. A prep sheet is read
        standing up, at arm's length, and then written on. */
     --space-h1: 0.90em;
-    --space-h2: 0.65em;
-    --space-h3: 0.45em;
+    --space-h2: 1.00em;    /* the H2/H3 band, tightened for a prep sheet */
+    --space-h3: 0.28em;
     --space-h4: 0.40em;
     --space-h5: 0.35em;
     --space-h6: 0.35em;

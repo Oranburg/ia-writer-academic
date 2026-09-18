@@ -729,6 +729,17 @@ blockquote.box-transaction {
    (Times has no `onum` either, so figures are lining. Nothing to
    be done about that in this family.)
    ========================================================= */
+/* Hyphenation breaks words far too eagerly at this measure:
+   "liabili-ty" and "mani-festation" both appeared on one page. Require
+   a longer word and more letters either side of the break. */
+p, li, blockquote, td, th {
+    -webkit-hyphenate-limit-before: 4;
+    -webkit-hyphenate-limit-after: 4;
+    -webkit-hyphenate-limit-lines: 2;
+    hyphenate-limit-chars: 8 4 4;
+    hyphenate-limit-lines: 2;
+}
+
 h1, h2, h3, h4, h5, h6 {
     font-family: var(--font-body);
     line-height: 1.25;

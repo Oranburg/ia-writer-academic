@@ -336,9 +336,16 @@
 
     /* Space above each level. Halved from the old 2/1.75/1.5/1.25em,
        which cost about 1.5 pages of a 7-page teaching sheet. */
+    /* H2 and H3 differ by one point, 6.7%, at the same weight, case
+       and alignment -- below the threshold a reader registers. Size
+       has nowhere to go: H2 cannot grow without crowding H1, and H3
+       cannot shrink without colliding with H4 at body size. So the
+       distinction is carried by space, which is the strongest signal
+       available in a one-face document and the only one that survives
+       a photocopier. A clear band above H2, almost none above H3. */
     --space-h1:         1.40em;
-    --space-h2:         1.00em;
-    --space-h3:         0.70em;
+    --space-h2:         1.55em;
+    --space-h3:         0.42em;
     --space-h4:         0.60em;
     --space-h5:         0.50em;
     --space-h6:         0.50em;
