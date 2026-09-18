@@ -249,11 +249,39 @@ func run() async {
     let fp = Page(width: paper.width * pxPerPt, height: max(footerH, 1) * pxPerPt)
     if let h = page("IATemplateHeaderFile") { await hp.load(h) }
     if let f = page("IATemplateFooterFile") { await fp.load(f) }
+    // Links. drawPDFPage copies a page's drawing and never its annotations,
+    // so this composition used to drop every link WebKit made: 71 of them
+    // in one 11-page essay, external URLs and the jumps from each note
+    // number to its note. Collect them all first, because a jump on page 1
+    // can target page 10, then re-create them on each page as it is drawn.
+    // Media boxes match (the body is drawn at identity), so bounds carry over.
+    var external: [Int: [(URL, CGRect)]] = [:]
+    var internalLinks: [Int: [(String, CGRect)]] = [:]
+    var anchors: [Int: [(String, CGPoint)]] = [:]
+    var anchorCount = 0
+    for i in 0..<total {
+        guard let pg = doc.page(at: i) else { continue }
+        for ann in pg.annotations {
+            if let u = (ann.action as? PDFActionURL)?.url ?? ann.url {
+                external[i, default: []].append((u, ann.bounds))
+            } else if let dest = ann.destination ?? (ann.action as? PDFActionGoTo)?.destination,
+                      let target = dest.page {
+                let name = "oranburg-\(anchorCount)"; anchorCount += 1
+                anchors[doc.index(for: target), default: []].append((name, dest.point))
+                internalLinks[i, default: []].append((name, ann.bounds))
+            }
+        }
+    }
+    var carried = 0
+
     // Every page. This was min(total, 8), which silently dropped the end
     // of any real document: its notes, its sources, its last section.
     for i in 0..<total {
         ctx.beginPDFPage(nil)
         if let pg = doc.page(at: i)?.pageRef { ctx.drawPDFPage(pg) }
+        for (name, point) in anchors[i] ?? [] { ctx.addDestination(name as CFString, at: point) }
+        for (u, r) in external[i] ?? [] { ctx.setURL(u as CFURL, for: r); carried += 1 }
+        for (name, r) in internalLinks[i] ?? [] { ctx.setDestination(name as CFString, for: r); carried += 1 }
         let data = ["title": docTitle, "author": docAuthor, "date": docDate,
                     "page-number": "\(i + 1)", "page-count": "\(total)"]
         if page("IATemplateHeaderFile") != nil {
@@ -267,6 +295,7 @@ func run() async {
         ctx.endPDFPage()
     }
     ctx.closePDF()
+    log("links carried into composed.pdf: \(carried) (\(external.values.map(\.count).reduce(0, +)) external, \(internalLinks.values.map(\.count).reduce(0, +)) internal)")
     if let c = PDFDocument(url: composedURL) {
         for i in 0..<c.pageCount {  // every page; was capped at 9
             let img = c.page(at: i)!.thumbnail(of: NSSize(width: paper.width * 1.5, height: paper.height * 1.5), for: .mediaBox)

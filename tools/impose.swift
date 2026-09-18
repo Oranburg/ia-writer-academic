@@ -80,6 +80,11 @@ for number in 1...pageCount {
     // so that the gutter always lands on the bound edge.
     let isRecto = firstPageIsVerso ? (number % 2 == 0) : (number % 2 == 1)
     context.translateBy(x: CGFloat(isRecto ? shift : -shift), y: 0)
+    // drawPDFPage drops the page's annotations, links included, and here
+    // that is deliberate: this file is a print master for Lulu. Print
+    // standards (PDF/X) restrict interactive annotations inside the trim,
+    // and a link on paper does nothing. tools/render.swift, which makes
+    // PDFs for reading on screen, carries links across; this does not.
     context.drawPDFPage(page)
 
     context.restoreGState()
